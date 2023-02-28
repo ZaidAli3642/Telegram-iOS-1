@@ -206,18 +206,14 @@ final class StorageCategoryItemComponent: Component {
                 iconView.removeFromSuperview()
             }
             
+            let fractionValue: Double = floor(component.category.sizeFraction * 100.0 * 10.0) / 10.0
             let fractionString: String
-            if component.category.sizeFraction != 0.0 {
-                let fractionValue: Double = floor(component.category.sizeFraction * 100.0 * 10.0) / 10.0
-                if fractionValue < 0.1 {
-                    fractionString = "<0.1%"
-                } else if abs(Double(Int(fractionValue)) - fractionValue) < 0.001 {
-                    fractionString = "\(Int(fractionValue))%"
-                } else {
-                    fractionString = "\(fractionValue)%"
-                }
+            if fractionValue < 0.1 {
+                fractionString = "<0.1"
+            } else if abs(Double(Int(fractionValue)) - fractionValue) < 0.001 {
+                fractionString = "\(Int(fractionValue))"
             } else {
-                fractionString = ""
+                fractionString = "\(fractionValue)"
             }
             
             let labelSize = self.label.update(
@@ -229,8 +225,8 @@ final class StorageCategoryItemComponent: Component {
             availableWidth = max(1.0, availableWidth - labelSize.width - 1.0)
             
             let titleValueSize = self.titleValue.update(
-                transition: .immediate,
-                component: AnyComponent(MultilineTextComponent(text: .plain(NSAttributedString(string: fractionString, font: Font.regular(17.0), textColor: component.theme.list.itemSecondaryTextColor)))),
+                transition: transition,
+                component: AnyComponent(MultilineTextComponent(text: .plain(NSAttributedString(string: "\(fractionString)%", font: Font.regular(17.0), textColor: component.theme.list.itemSecondaryTextColor)))),
                 environment: {},
                 containerSize: CGSize(width: availableWidth, height: 100.0)
             )
@@ -270,12 +266,7 @@ final class StorageCategoryItemComponent: Component {
                     titleValueView.isUserInteractionEnabled = false
                     self.addSubview(titleValueView)
                 }
-                
-                if titleValueView.bounds.size != titleValueFrame.size {
-                    titleValueView.frame = titleValueFrame
-                } else {
-                    transition.setFrame(view: titleValueView, frame: titleValueFrame)
-                }
+                transition.setFrame(view: titleValueView, frame: titleValueFrame)
             }
             if let labelView = self.label.view {
                 if labelView.superview == nil {

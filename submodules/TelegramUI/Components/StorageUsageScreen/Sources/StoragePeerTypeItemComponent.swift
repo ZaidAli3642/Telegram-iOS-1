@@ -156,7 +156,6 @@ final class StoragePeerTypeItemComponent: Component {
         func update(component: StoragePeerTypeItemComponent, availableSize: CGSize, state: EmptyComponentState, environment: Environment<Empty>, transition: Transition) -> CGSize {
             let themeUpdated = self.component?.theme !== component.theme
             
-            let previousComponent = self.component
             self.component = component
             
             let leftInset: CGFloat = 62.0
@@ -226,42 +225,29 @@ final class StoragePeerTypeItemComponent: Component {
             if let titleView = self.title.view {
                 if titleView.superview == nil {
                     titleView.isUserInteractionEnabled = false
-                    titleView.layer.anchorPoint = CGPoint()
                     self.addSubview(titleView)
                 }
-                
-                transition.setPosition(view: titleView, position: titleFrame.topLeft)
-                titleView.bounds = CGRect(origin: CGPoint(), size: titleFrame.size)
+                transition.setFrame(view: titleView, frame: titleFrame)
             }
             if let subtitleView = self.subtitle?.view, let subtitleFrame {
                 if subtitleView.superview == nil {
                     subtitleView.isUserInteractionEnabled = false
-                    subtitleView.layer.anchorPoint = CGPoint()
                     self.addSubview(subtitleView)
                 }
-                transition.setPosition(view: subtitleView, position: subtitleFrame.topLeft)
-                subtitleView.bounds = CGRect(origin: CGPoint(), size: subtitleFrame.size)
+                transition.setFrame(view: subtitleView, frame: subtitleFrame)
             }
             if let labelView = self.label.view {
                 if labelView.superview == nil {
                     labelView.isUserInteractionEnabled = false
-                    labelView.layer.anchorPoint = CGPoint(x: 1.0, y: 0.0)
                     self.addSubview(labelView)
                 }
-                
-                transition.setPosition(view: labelView, position: labelFrame.topRight)
-                labelView.bounds = CGRect(origin: CGPoint(), size: labelFrame.size)
+                transition.setFrame(view: labelView, frame: labelFrame)
             }
             
-            if themeUpdated || previousComponent?.iconName != component.iconName {
+            if themeUpdated {
                 self.separatorLayer.backgroundColor = component.theme.list.itemBlocksSeparatorColor.cgColor
                 self.iconView.image = UIImage(bundleImageName: component.iconName)
-             
-                if component.value.isEmpty {
-                    self.arrowIconView.image = PresentationResourcesItemList.disclosureArrowImage(component.theme)
-                } else {
-                    self.arrowIconView.image = PresentationResourcesItemList.disclosureOptionArrowsImage(component.theme)
-                }
+                self.arrowIconView.image = PresentationResourcesItemList.disclosureOptionArrowsImage(component.theme)
             }
             
             if let image = self.iconView.image {

@@ -5,7 +5,6 @@ import Display
 import SwiftSignalKit
 import UniversalMediaPlayer
 import LegacyComponents
-import UIKitRuntimeUtils
 
 private final class InstantVideoRadialStatusNodeParameters: NSObject {
     let color: UIColor
@@ -125,8 +124,6 @@ final class InstantVideoRadialStatusNode: ASDisplayNode, UIGestureRecognizerDele
                 strongSelf.statusValue = status
             }
         })
-        
-        self.view.disablesInteractiveTransitionGestureRecognizer = true
     }
     
     deinit {

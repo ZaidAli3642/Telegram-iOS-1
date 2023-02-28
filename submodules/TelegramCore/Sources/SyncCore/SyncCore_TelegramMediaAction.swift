@@ -100,7 +100,6 @@ public enum TelegramMediaActionType: PostboxCoding, Equatable {
     case topicEdited(components: [ForumTopicEditComponent])
     case suggestedProfilePhoto(image: TelegramMediaImage?)
     case attachMenuBotAllowed
-    case requestedPeer(buttonId: Int32, peerId: PeerId)
     
     public init(decoder: PostboxDecoder) {
         let rawValue: Int32 = decoder.decodeInt32ForKey("_rawValue", orElse: 0)
@@ -179,8 +178,6 @@ public enum TelegramMediaActionType: PostboxCoding, Equatable {
             self = .suggestedProfilePhoto(image: decoder.decodeObjectForKey("image") as? TelegramMediaImage)
         case 31:
             self = .attachMenuBotAllowed
-        case 32:
-            self = .requestedPeer(buttonId: decoder.decodeInt32ForKey("b", orElse: 0), peerId: PeerId(decoder.decodeInt64ForKey("pi", orElse: 0)))
         default:
             self = .unknown
         }
@@ -334,10 +331,6 @@ public enum TelegramMediaActionType: PostboxCoding, Equatable {
             }
         case .attachMenuBotAllowed:
             encoder.encodeInt32(31, forKey: "_rawValue")
-        case let .requestedPeer(buttonId, peerId):
-            encoder.encodeInt32(32, forKey: "_rawValue")
-            encoder.encodeInt32(buttonId, forKey: "b")
-            encoder.encodeInt64(peerId.toInt64(), forKey: "pi")
         }
     }
     
@@ -357,8 +350,6 @@ public enum TelegramMediaActionType: PostboxCoding, Equatable {
             return [from, to]
         case let .inviteToGroupPhoneCall(_, _, peerIds):
             return peerIds
-        case let .requestedPeer(_, peerId):
-            return [peerId]
         default:
             return []
         }

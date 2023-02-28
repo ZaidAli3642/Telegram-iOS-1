@@ -25,7 +25,6 @@ swift_library(
         "//submodules/GalleryUI:GalleryUI",
         "//submodules/MediaPlayer:UniversalMediaPlayer",
         "//submodules/AccountContext:AccountContext",
-        "//submodules/AvatarVideoNode:AvatarVideoNode",
     ],
     visibility = [
         "//visibility:public",

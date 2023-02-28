@@ -196,7 +196,7 @@ func inputPanelForChatPresentationIntefaceState(_ chatPresentationInterfaceState
                 }
             }
                         
-            if case .group = channel.info, isMember && !channel.hasPermission(.sendSomething) && !channel.flags.contains(.isGigagroup) {
+            if isMember && channel.hasBannedPermission(.banSendMessages) != nil && !channel.flags.contains(.isGigagroup) {
                 if let currentPanel = (currentPanel as? ChatRestrictedInputPanelNode) ?? (currentSecondaryPanel as? ChatRestrictedInputPanelNode) {
                     return (currentPanel, nil)
                 } else {
@@ -211,7 +211,7 @@ func inputPanelForChatPresentationIntefaceState(_ chatPresentationInterfaceState
             case .broadcast:
                 if chatPresentationInterfaceState.interfaceState.editMessage != nil, channel.hasPermission(.editAllMessages) {
                     displayInputTextPanel = true
-                } else if !channel.hasPermission(.sendSomething) || !isMember {
+                } else if !channel.hasPermission(.sendMessages) || !isMember {
                     if let currentPanel = (currentPanel as? ChatChannelSubscriberInputPanelNode) ?? (currentSecondaryPanel as? ChatChannelSubscriberInputPanelNode) {
                         return (currentPanel, nil)
                     } else {
@@ -235,7 +235,7 @@ func inputPanelForChatPresentationIntefaceState(_ chatPresentationInterfaceState
                         }
                     }
                 case .member:
-                    if channel.flags.contains(.isGigagroup) && !channel.hasPermission(.sendSomething) {
+                    if channel.flags.contains(.isGigagroup) && !channel.hasPermission(.sendMessages) {
                         if let currentPanel = (currentPanel as? ChatChannelSubscriberInputPanelNode) ?? (currentSecondaryPanel as? ChatChannelSubscriberInputPanelNode) {
                             return (currentPanel, nil)
                         } else {
@@ -280,7 +280,7 @@ func inputPanelForChatPresentationIntefaceState(_ chatPresentationInterfaceState
                 break
             }
             
-            if !group.hasPermission(.sendSomething) {
+            if group.hasBannedPermission(.banSendMessages) {
                 if let currentPanel = (currentPanel as? ChatRestrictedInputPanelNode) ?? (currentSecondaryPanel as? ChatRestrictedInputPanelNode) {
                     return (currentPanel, nil)
                 } else {

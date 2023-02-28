@@ -259,7 +259,7 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, UIScroll
                             }
                         })))
                     }
-                    return .single((itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: strongSelf.context, item: item, menu: menuItems)))
+                    return .single((itemNode.view, itemNode.bounds, StickerPreviewPeekContent(account: strongSelf.context.account, item: item, menu: menuItems)))
                 }
             }
             return nil
@@ -394,39 +394,19 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, UIScroll
             forceTitleUpdate = true
         }
         
-        let itemsPerRow: Int
-        if let stickerPack = self.stickerPack, case .emoji = stickerPack.type {
-            itemsPerRow = 8
-        } else {
-            itemsPerRow = 4
-        }
-        if let stickerPack = self.stickerPack, self.currentItems.isEmpty || self.currentItems.count != self.pendingItems.count || self.pendingItems != self.currentItems || forceTitleUpdate {
+        if let _ = self.stickerPack, self.currentItems.isEmpty || self.currentItems.count != self.pendingItems.count || self.pendingItems != self.currentItems || forceTitleUpdate {
             let previousItems = self.currentItems
             self.currentItems = self.pendingItems
             
             let titleFont = Font.medium(20.0)
             let title: String
             if let _ = self.progress {
-                if case .emoji = stickerPack.type {
-                    title = self.presentationData.strings.ImportStickerPack_ImportingEmojis
-                } else {
-                    title = self.presentationData.strings.ImportStickerPack_ImportingStickers
-                }
+                title = self.presentationData.strings.ImportStickerPack_ImportingStickers
             } else {
-                if case .emoji = stickerPack.type {
-                    title = self.presentationData.strings.ImportStickerPack_EmojiCount(Int32(self.currentItems.count))
-                } else {
-                    title = self.presentationData.strings.ImportStickerPack_StickerCount(Int32(self.currentItems.count))
-                }
+                title = self.presentationData.strings.ImportStickerPack_StickerCount(Int32(self.currentItems.count))
             }
             self.contentTitleNode.attributedText = stringWithAppliedEntities(title, entities: [], baseColor: self.presentationData.theme.actionSheet.primaryTextColor, linkColor: self.presentationData.theme.actionSheet.controlAccentColor, baseFont: titleFont, linkFont: titleFont, boldFont: titleFont, italicFont: titleFont, boldItalicFont: titleFont, fixedFont: titleFont, blockQuoteFont: titleFont, message: nil)
 
-            if case .emoji = stickerPack.type {
-                self.createActionButtonNode.setTitle(self.presentationData.strings.ImportStickerPack_CreateNewEmojiPack, with: Font.regular(20.0), with: self.presentationData.theme.actionSheet.controlAccentColor, for: .normal)
-            } else {
-                self.createActionButtonNode.setTitle(self.presentationData.strings.ImportStickerPack_CreateNewStickerSet, with: Font.regular(20.0), with: self.presentationData.theme.actionSheet.controlAccentColor, for: .normal)
-            }
-            
             if !forceTitleUpdate {
                 transaction = StickerPackPreviewGridTransaction(previousList: previousItems, list: self.currentItems, account: self.context.account, interaction: self.interaction, theme: self.presentationData.theme)
             }
@@ -442,7 +422,7 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, UIScroll
         transition.updateFrame(node: self.contentTitleNode, frame: titleFrame)
         transition.updateFrame(node: self.contentSeparatorNode, frame: CGRect(origin: CGPoint(x: contentContainerFrame.minX, y: self.contentBackgroundNode.frame.minY + titleAreaHeight), size: CGSize(width: contentContainerFrame.size.width, height: UIScreenPixel)))
         
-        
+        let itemsPerRow = 4
         let itemWidth = floor(contentFrame.size.width / CGFloat(itemsPerRow))
         let rowCount = itemCount / itemsPerRow + (itemCount % itemsPerRow != 0 ? 1 : 0)
         
@@ -625,9 +605,9 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, UIScroll
                 if let localResource = item.stickerItem.resource {
                     self.context.account.postbox.mediaBox.copyResourceData(from: localResource.id, to: resource.id)
                 }
-                stickers.append(ImportSticker(resource: resource, emojis: item.stickerItem.emojis, dimensions: dimensions, mimeType: item.stickerItem.mimeType, keywords: item.stickerItem.keywords))
+                stickers.append(ImportSticker(resource: resource, emojis: item.stickerItem.emojis, dimensions: dimensions, mimeType: item.stickerItem.mimeType))
             } else if let resource = item.stickerItem.resource {
-                stickers.append(ImportSticker(resource: resource, emojis: item.stickerItem.emojis, dimensions: dimensions, mimeType: item.stickerItem.mimeType, keywords: item.stickerItem.keywords))
+                stickers.append(ImportSticker(resource: resource, emojis: item.stickerItem.emojis, dimensions: dimensions, mimeType: item.stickerItem.mimeType))
             }
         }
         var thumbnailSticker: ImportSticker?
@@ -638,7 +618,7 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, UIScroll
             }
             let resource = LocalFileMediaResource(fileId: Int64.random(in: Int64.min ... Int64.max))
             self.context.account.postbox.mediaBox.storeResourceData(resource.id, data: thumbnail.data)
-            thumbnailSticker = ImportSticker(resource: resource, emojis: [], dimensions: dimensions, mimeType: thumbnail.mimeType, keywords: thumbnail.keywords)
+            thumbnailSticker = ImportSticker(resource: resource, emojis: [], dimensions: dimensions, mimeType: thumbnail.mimeType)
         }
         
         let firstStickerItem = thumbnailSticker ?? stickers.first
@@ -656,7 +636,7 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, UIScroll
                     if let (_, _, count) = strongSelf.progress {
                         strongSelf.progress = (1.0, count, count)
                         var animated = false
-                        if case .image = stickerPack.type.contentType {
+                        if case .image = stickerPack.type {
                             animated = true
                         }
                         strongSelf.radialStatus.transitionToState(.progress(color: strongSelf.presentationData.theme.list.itemAccentColor, lineWidth: 6.0, value: 1.0, cancelEnabled: false, animateRotation: false), animated: animated, synchronous: true, completion: {})
@@ -824,7 +804,7 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, UIScroll
         }
         self.pendingItems = updatedItems
       
-        if case .image = stickerPack.type.contentType {
+        if case .image = stickerPack.type {
         } else {
             self.stickerPackReady = stickerPack.stickers.count == (verifiedStickers.count + declinedStickers.count) && updatedItems.count > 0
         }

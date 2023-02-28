@@ -101,13 +101,11 @@ public final class SolidRoundedButtonNode: ASDisplayNode {
             if self.isEnabled != oldValue {
                 self.updateColors(animated: true)
             }
-            self.updateAccessibilityLabels()
         }
     }
     
     public var title: String? {
         didSet {
-            self.updateAccessibilityLabels()
             if let width = self.validLayout {
                 _ = self.updateLayout(width: width, transition: .immediate)
             }
@@ -116,7 +114,6 @@ public final class SolidRoundedButtonNode: ASDisplayNode {
     
     public var subtitle: String? {
         didSet {
-            self.updateAccessibilityLabels()
             if let width = self.validLayout {
                 _ = self.updateLayout(width: width, previousSubtitle: oldValue, transition: .immediate)
             }
@@ -126,15 +123,6 @@ public final class SolidRoundedButtonNode: ASDisplayNode {
     public var icon: UIImage? {
         didSet {
             self.iconNode.image = generateTintedImage(image: self.icon, color: self.theme.foregroundColor)
-        }
-    }
-    
-    private func updateAccessibilityLabels() {
-        self.accessibilityLabel = (self.title ?? "") + " " + (self.subtitle ?? "")
-        if !self.isEnabled {
-            self.accessibilityTraits = [.button, .notEnabled]
-        } else {
-            self.accessibilityTraits = [.button]
         }
     }
     
@@ -257,8 +245,6 @@ public final class SolidRoundedButtonNode: ASDisplayNode {
         
         super.init()
         
-        self.isAccessibilityElement = true
-        
         self.addSubnode(self.buttonBackgroundNode)
         self.addSubnode(self.buttonNode)
         self.addSubnode(self.titleNode)
@@ -295,8 +281,6 @@ public final class SolidRoundedButtonNode: ASDisplayNode {
                 }
             }
         }
-        
-        self.updateAccessibilityLabels()
     }
     
     public override func didLoad() {
@@ -775,7 +759,6 @@ public final class SolidRoundedButtonView: UIView {
     
     public var title: String? {
         didSet {
-            self.updateAccessibilityLabels()
             if let width = self.validLayout {
                 _ = self.updateLayout(width: width, transition: .immediate)
             }
@@ -784,7 +767,6 @@ public final class SolidRoundedButtonView: UIView {
     
     public var label: String? {
         didSet {
-            self.updateAccessibilityLabels()
             if let width = self.validLayout {
                 _ = self.updateLayout(width: width, transition: .immediate)
             }
@@ -793,20 +775,9 @@ public final class SolidRoundedButtonView: UIView {
     
     public var subtitle: String? {
         didSet {
-            self.updateAccessibilityLabels()
             if let width = self.validLayout {
                 _ = self.updateLayout(width: width, previousSubtitle: oldValue, transition: .immediate)
             }
-        }
-    }
-    
-    private func updateAccessibilityLabels() {
-        self.accessibilityLabel = (self.title ?? "") + " " + (self.subtitle ?? "")
-        self.accessibilityValue = self.label
-        if !self.isEnabled {
-            self.accessibilityTraits = [.button, .notEnabled]
-        } else {
-            self.accessibilityTraits = [.button]
         }
     }
     
@@ -821,7 +792,6 @@ public final class SolidRoundedButtonView: UIView {
             if self.isEnabled != oldValue {
                 self.titleNode.alpha = self.isEnabled ? 1.0 : 0.6
             }
-            self.updateAccessibilityLabels()
         }
     }
     
@@ -947,8 +917,6 @@ public final class SolidRoundedButtonView: UIView {
         
         super.init(frame: CGRect())
         
-        self.isAccessibilityElement = true
-        
         self.addSubview(self.buttonBackgroundNode)
         self.addSubview(self.buttonNode)
         self.addSubview(self.titleNode)
@@ -990,8 +958,6 @@ public final class SolidRoundedButtonView: UIView {
         if #available(iOS 13.0, *) {
             self.buttonBackgroundNode.layer.cornerCurve = .continuous
         }
-        
-        self.updateAccessibilityLabels()
     }
         
     required public init(coder: NSCoder) {

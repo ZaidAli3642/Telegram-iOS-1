@@ -87,7 +87,7 @@ public class ItemListSwitchItem: ListViewItem, ItemListItem {
     }
 }
 
-protocol ItemListSwitchNodeImpl {
+private protocol ItemListSwitchNodeImpl {
     var frameColor: UIColor { get set }
     var contentColor: UIColor { get set }
     var handleColor: UIColor { get set }
@@ -522,7 +522,7 @@ public class ItemListSwitchItemNode: ListViewItemNode, ItemListItemNode {
     
     @objc private func tapGesture(_ recognizer: UITapGestureRecognizer) {
         if let item = self.item, let switchView = self.switchNode.view as? UISwitch, case .ended = recognizer.state {
-            if item.enabled && !item.displayLocked {
+            if item.enabled {
                 let value = switchView.isOn
                 item.updated(!value)
             } else {

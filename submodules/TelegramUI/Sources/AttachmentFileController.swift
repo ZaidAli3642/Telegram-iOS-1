@@ -163,37 +163,7 @@ private func attachmentFileControllerEntries(presentationData: PresentationData,
     return entries
 }
 
-private final class AttachmentFileContext: AttachmentMediaPickerContext {
-    var selectionCount: Signal<Int, NoError> {
-        return .single(0)
-    }
-    
-    var caption: Signal<NSAttributedString?, NoError> {
-        return .single(nil)
-    }
-    
-    public var loadingProgress: Signal<CGFloat?, NoError> {
-        return .single(nil)
-    }
-    
-    public var mainButtonState: Signal<AttachmentMainButtonState?, NoError> {
-        return .single(nil)
-    }
-            
-    func setCaption(_ caption: NSAttributedString) {
-    }
-    
-    func send(silently: Bool, mode: AttachmentMediaPickerSendMode) {
-    }
-    
-    func schedule() {
-    }
-    
-    func mainButtonAction() {
-    }
-}
-
-class AttachmentFileControllerImpl: ItemListController, AttachmentContainable {
+private class AttachmentFileControllerImpl: ItemListController, AttachmentContainable {
     public var requestAttachmentMenuExpansion: () -> Void = {}
     public var updateNavigationStack: (@escaping ([AttachmentContainable]) -> ([AttachmentContainable], AttachmentMediaPickerContext?)) -> Void = { _ in }
     public var updateTabBarAlpha: (CGFloat, ContainedViewLayoutTransition) -> Void = { _, _ in }
@@ -204,19 +174,15 @@ class AttachmentFileControllerImpl: ItemListController, AttachmentContainable {
     var delayDisappear = false
     
     var resetForReuseImpl: () -> Void = {}
-    func resetForReuse() {
+    public func resetForReuse() {
         self.resetForReuseImpl()
         self.scrollToTop?()
     }
     
-    func prepareForReuse() {
+    public func prepareForReuse() {
         self.delayDisappear = true
         self.visibleBottomContentOffsetChanged?(self.visibleBottomContentOffset)
         self.delayDisappear = false
-    }
-    
-    public var mediaPickerContext: AttachmentMediaPickerContext? {
-        return AttachmentFileContext()
     }
 }
 
@@ -224,7 +190,7 @@ private struct AttachmentFileControllerState: Equatable {
     var searching: Bool
 }
 
-func attachmentFileController(context: AccountContext, updatedPresentationData: (initial: PresentationData, signal: Signal<PresentationData, NoError>)? = nil, bannedSendMedia: (Int32, Bool)?, presentGallery: @escaping () -> Void, presentFiles: @escaping () -> Void, send: @escaping (AnyMediaReference) -> Void) -> AttachmentFileControllerImpl {
+public func attachmentFileController(context: AccountContext, updatedPresentationData: (initial: PresentationData, signal: Signal<PresentationData, NoError>)? = nil, bannedSendMedia: (Int32, Bool)?, presentGallery: @escaping () -> Void, presentFiles: @escaping () -> Void, send: @escaping (AnyMediaReference) -> Void) -> AttachmentContainable {
     let actionsDisposable = DisposableSet()
     
     let statePromise = ValuePromise(AttachmentFileControllerState(searching: false), ignoreRepeated: true)

@@ -147,8 +147,7 @@ final class ChatBotInfoItemNode: ListViewItemNode {
             enableSound: false,
             fetchAutomatically: true,
             onlyFullSizeThumbnail: false,
-            continuePlayingWithoutSoundOnLostAudioSession: false,
-            storeAfterDownload: nil
+            continuePlayingWithoutSoundOnLostAudioSession: false
         )
         let videoNode = UniversalVideoNode(postbox: context.account.postbox, audioSession: context.sharedContext.mediaManager.audioSession, manager: context.sharedContext.mediaManager.universalVideoManager, decoration: VideoDecoration(), content: videoContent, priority: .embedded)
         videoNode.canAttachContent = true
@@ -298,7 +297,7 @@ final class ChatBotInfoItemNode: ListViewItemNode {
                         if let updatedImageSignal = updatedImageSignal {
                             strongSelf.imageNode.setSignal(updatedImageSignal)
                             if let image = item.photo {
-                                strongSelf.fetchDisposable.set(chatMessagePhotoInteractiveFetched(context: item.context, userLocation: .other, photoReference: .standalone(media: image), displayAtSize: nil, storeToDownloadsPeerId: nil).start())
+                                strongSelf.fetchDisposable.set(chatMessagePhotoInteractiveFetched(context: item.context, userLocation: .other, photoReference: .standalone(media: image), displayAtSize: nil, storeToDownloadsPeerType: nil).start())
                             }
                         }
                         strongSelf.imageNode.isHidden = false
@@ -428,7 +427,7 @@ final class ChatBotInfoItemNode: ListViewItemNode {
                 }
                 return .url(url: url, concealed: concealed)
             } else if let peerMention = attributes[NSAttributedString.Key(rawValue: TelegramTextAttributes.PeerMention)] as? TelegramPeerMention {
-                return .peerMention(peerId: peerMention.peerId, mention: peerMention.mention, openProfile: false)
+                return .peerMention(peerMention.peerId, peerMention.mention)
             } else if let peerName = attributes[NSAttributedString.Key(rawValue: TelegramTextAttributes.PeerTextMention)] as? String {
                 return .textMention(peerName)
             } else if let botCommand = attributes[NSAttributedString.Key(rawValue: TelegramTextAttributes.BotCommand)] as? String {
@@ -455,7 +454,7 @@ final class ChatBotInfoItemNode: ListViewItemNode {
                                     break
                                 case let .url(url, concealed):
                                     self.item?.controllerInteraction.openUrl(url, concealed, nil, nil)
-                                case let .peerMention(peerId, _, _):
+                                case let .peerMention(peerId, _):
                                     if let item = self.item {
                                         let _ = (item.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
                                         |> deliverOnMainQueue).start(next: { [weak self] peer in
@@ -481,7 +480,7 @@ final class ChatBotInfoItemNode: ListViewItemNode {
                                         break
                                     case let .url(url, _):
                                         item.controllerInteraction.longTap(.url(url), nil)
-                                    case let .peerMention(peerId, mention, _):
+                                    case let .peerMention(peerId, mention):
                                         item.controllerInteraction.longTap(.peerMention(peerId, mention), nil)
                                     case let .textMention(name):
                                         item.controllerInteraction.longTap(.mention(name), nil)

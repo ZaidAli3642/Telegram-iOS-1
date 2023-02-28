@@ -21,7 +21,7 @@ protocol LegacyPaintEntity {
     func image(for time: CMTime, fps: Int, completion: @escaping (CIImage?) -> Void)
 }
 
-private func render(width: Int, height: Int, bytesPerRow: Int, data: Data, type: AnimationRendererFrameType, tintColor: UIColor?) -> CIImage? {
+private func render(width: Int, height: Int, bytesPerRow: Int, data: Data, type: AnimationRendererFrameType) -> CIImage? {
     let calculatedBytesPerRow = (4 * Int(width) + 31) & (~31)
     assert(bytesPerRow == calculatedBytesPerRow)
     
@@ -46,10 +46,7 @@ private func render(width: Int, height: Int, bytesPerRow: Int, data: Data, type:
         }
     })
 
-    if var image = image {
-        if let tintColor, let tintedImage = generateTintedImage(image: image, color: tintColor) {
-            image = tintedImage
-        }
+    if let image = image {
         return CIImage(image: image)
     } else {
         return nil
@@ -78,7 +75,7 @@ private class LegacyPaintStickerEntity: LegacyPaintEntity {
     }
     
     let account: Account
-    let file: TelegramMediaFile?
+    let file: TelegramMediaFile
     let entity: DrawingStickerEntity
     let animated: Bool
     let durationPromise = Promise<Double>()
@@ -98,53 +95,47 @@ private class LegacyPaintStickerEntity: LegacyPaintEntity {
     init(account: Account, entity: DrawingStickerEntity) {
         self.account = account
         self.entity = entity
-        self.animated = entity.isAnimated
-
-        switch entity.content {
-        case let .file(file):
-            self.file = file
-            if file.isAnimatedSticker || file.isVideoSticker || file.mimeType == "video/webm" {
-                self.source = AnimatedStickerResourceSource(account: account, resource: file.resource, isVideo: file.isVideoSticker || file.mimeType == "video/webm")
-                if let source = self.source {
-                    let dimensions = file.dimensions ?? PixelDimensions(width: 512, height: 512)
-                    let fittedDimensions = dimensions.cgSize.aspectFitted(CGSize(width: 384, height: 384))
-                    self.disposables.add((source.cachedDataPath(width: Int(fittedDimensions.width), height: Int(fittedDimensions.height))
+        self.file = entity.file
+        self.animated = file.isAnimatedSticker || file.isVideoSticker
+        
+        if file.isAnimatedSticker || file.isVideoSticker {
+            self.source = AnimatedStickerResourceSource(account: account, resource: file.resource, isVideo: file.isVideoSticker)
+            if let source = self.source {
+                let dimensions = self.file.dimensions ?? PixelDimensions(width: 512, height: 512)
+                let fittedDimensions = dimensions.cgSize.aspectFitted(CGSize(width: 384, height: 384))
+                self.disposables.add((source.cachedDataPath(width: Int(fittedDimensions.width), height: Int(fittedDimensions.height))
                     |> deliverOn(self.queue)).start(next: { [weak self] path, complete in
-                        if let strongSelf = self, complete {
-                            if let data = try? Data(contentsOf: URL(fileURLWithPath: path), options: [.mappedRead]) {
-                                let queue = strongSelf.queue
-                                let frameSource = AnimatedStickerCachedFrameSource(queue: queue, data: data, complete: complete, notifyUpdated: {})!
-                                strongSelf.frameCount = frameSource.frameCount
-                                strongSelf.frameRate = frameSource.frameRate
-                                
-                                let duration = Double(frameSource.frameCount) / Double(frameSource.frameRate)
-                                strongSelf.totalDuration = duration
-                                
-                                strongSelf.durationPromise.set(.single(duration))
-                                
-                                let frameQueue = QueueLocalObject<AnimatedStickerFrameQueue>(queue: queue, generate: {
-                                    return AnimatedStickerFrameQueue(queue: queue, length: 1, source: frameSource)
-                                })
-                                strongSelf.frameQueue.set(.single(frameQueue))
-                            }
-                        }
-                    }))
-                }
-            } else {
-                self.disposables.add((chatMessageSticker(account: self.account, userLocation: .other, file: file, small: false, fetched: true, onlyFullSize: true, thumbnail: false, synchronousLoad: false)
-                |> deliverOn(self.queue)).start(next: { [weak self] generator in
-                    if let strongSelf = self {
-                        let context = generator(TransformImageArguments(corners: ImageCorners(), imageSize: entity.baseSize, boundingSize: entity.baseSize, intrinsicInsets: UIEdgeInsets()))
-                        let image = context?.generateImage()
-                        if let image = image {
-                            strongSelf.imagePromise.set(.single(image))
+                    if let strongSelf = self, complete {
+                        if let data = try? Data(contentsOf: URL(fileURLWithPath: path), options: [.mappedRead]) {
+                            let queue = strongSelf.queue
+                            let frameSource = AnimatedStickerCachedFrameSource(queue: queue, data: data, complete: complete, notifyUpdated: {})!
+                            strongSelf.frameCount = frameSource.frameCount
+                            strongSelf.frameRate = frameSource.frameRate
+                            
+                            let duration = Double(frameSource.frameCount) / Double(frameSource.frameRate)
+                            strongSelf.totalDuration = duration
+                            
+                            strongSelf.durationPromise.set(.single(duration))
+                            
+                            let frameQueue = QueueLocalObject<AnimatedStickerFrameQueue>(queue: queue, generate: {
+                                return AnimatedStickerFrameQueue(queue: queue, length: 1, source: frameSource)
+                            })
+                            strongSelf.frameQueue.set(.single(frameQueue))
                         }
                     }
                 }))
             }
-        case let .image(image):
-            self.file = nil
-            self.imagePromise.set(.single(image))
+        } else {
+            self.disposables.add((chatMessageSticker(account: self.account, userLocation: .other, file: self.file, small: false, fetched: true, onlyFullSize: true, thumbnail: false, synchronousLoad: false)
+            |> deliverOn(self.queue)).start(next: { [weak self] generator in
+                if let strongSelf = self {
+                    let context = generator(TransformImageArguments(corners: ImageCorners(), imageSize: entity.baseSize, boundingSize: entity.baseSize, intrinsicInsets: UIEdgeInsets()))
+                    let image = context?.generateImage()
+                    if let image = image {
+                        strongSelf.imagePromise.set(.single(image))
+                    }
+                }
+            }))
         }
     }
     
@@ -162,11 +153,6 @@ private class LegacyPaintStickerEntity: LegacyPaintEntity {
     func image(for time: CMTime, fps: Int, completion: @escaping (CIImage?) -> Void) {
         if self.animated {
             let currentTime = CMTimeGetSeconds(time)
-            
-            var tintColor: UIColor?
-            if let file = self.file, file.isCustomTemplateEmoji {
-                tintColor = .white
-            }
             
             self.disposables.add((self.frameQueue.get()
             |> take(1)
@@ -212,7 +198,7 @@ private class LegacyPaintStickerEntity: LegacyPaintEntity {
                         return frame
                     }
                     if let frame = maybeFrame {
-                        let image = render(width: frame.width, height: frame.height, bytesPerRow: frame.bytesPerRow, data: frame.data, type: frame.type, tintColor: tintColor)
+                        let image = render(width: frame.width, height: frame.height, bytesPerRow: frame.bytesPerRow, data: frame.data, type: frame.type)
                         completion(image)
                         strongSelf.cachedCIImage = image
                     } else {
@@ -414,13 +400,10 @@ public final class LegacyPaintEntityRenderer: NSObject, TGPhotoPaintEntityRender
     private let originalSize: CGSize
     private let cropRect: CGRect?
     
-    private let isAvatar: Bool
-    
     public init(account: Account?, adjustments: TGMediaEditAdjustments) {
         self.account = account
         self.originalSize = adjustments.originalSize
         self.cropRect = adjustments.cropRect.isEmpty ? nil : adjustments.cropRect
-        self.isAvatar = ((adjustments as? TGVideoEditAdjustments)?.documentId ?? 0) != 0
         
         var renderEntities: [LegacyPaintEntity] = []
         if let account = account, let paintingData = adjustments.paintingData, let entitiesData = paintingData.entitiesData {
@@ -488,7 +471,7 @@ public final class LegacyPaintEntityRenderer: NSObject, TGPhotoPaintEntityRender
             } else {
                 result = minDuration
             }
-            if result < minDuration && !self.isAvatar {
+            if result < minDuration {
                 if result > 0 {
                     result = result * ceil(minDuration / result)
                 } else {

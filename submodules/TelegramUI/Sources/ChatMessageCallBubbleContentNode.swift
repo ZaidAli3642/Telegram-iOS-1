@@ -32,10 +32,9 @@ class ChatMessageCallBubbleContentNode: ChatMessageBubbleContentNode {
         self.iconNode.isLayerBacked = true
         
         self.buttonNode = HighlightableButtonNode()
-        self.buttonNode.isAccessibilityElement = false
         
         super.init()
-                
+        
         self.titleNode.isUserInteractionEnabled = false
         self.titleNode.contentMode = .topLeft
         self.titleNode.contentsScale = UIScreenScale
@@ -57,12 +56,6 @@ class ChatMessageCallBubbleContentNode: ChatMessageBubbleContentNode {
     override func accessibilityActivate() -> Bool {
         self.callButtonPressed()
         return true
-    }
-    
-    override func didLoad() {
-        super.didLoad()
-        
-        self.view.accessibilityElementsHidden = true
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -174,7 +167,7 @@ class ChatMessageCallBubbleContentNode: ChatMessageBubbleContentNode {
                     }
                 }
                 
-                let dateText = stringForMessageTimestampStatus(accountPeerId: item.context.account.peerId, message: item.message, dateTimeFormat: item.presentationData.dateTimeFormat, nameDisplayOrder: item.presentationData.nameDisplayOrder, strings: item.presentationData.strings, associatedData: item.associatedData)
+                let dateText = stringForMessageTimestampStatus(accountPeerId: item.context.account.peerId, message: item.message, dateTimeFormat: item.presentationData.dateTimeFormat, nameDisplayOrder: item.presentationData.nameDisplayOrder, strings: item.presentationData.strings)
                 
                 let statusText: String
                 if let callDuration = callDuration, callDuration > 1 {

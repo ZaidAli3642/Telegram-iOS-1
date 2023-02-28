@@ -172,8 +172,6 @@ func telegramMediaFileFromApiDocument(_ document: Api.Document) -> TelegramMedia
                         videoThumbnails.append(TelegramMediaFile.VideoThumbnail(
                             dimensions: PixelDimensions(width: w, height: h),
                             resource: resource))
-                    case .videoSizeEmojiMarkup, .videoSizeStickerMarkup:
-                        break
                     }
                 }
             }

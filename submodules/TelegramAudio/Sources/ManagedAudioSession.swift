@@ -18,7 +18,7 @@ public enum ManagedAudioSessionType: Equatable {
     case ambient
     case play
     case playWithPossiblePortOverride
-    case record(speaker: Bool, withOthers: Bool)
+    case record(speaker: Bool)
     case voiceCall
     case videoCall
     case recordWithOthers
@@ -58,7 +58,6 @@ private func nativeCategoryForType(_ type: ManagedAudioSessionType, headphones: 
 public enum AudioSessionPortType {
     case generic
     case bluetooth
-    case wired
 }
 
 public struct AudioSessionPort: Equatable {
@@ -78,14 +77,7 @@ private let bluetoothPortTypes = Set<AVAudioSession.Port>([.bluetoothA2DP, .blue
 
 private extension AudioSessionOutput {
     init(description: AVAudioSessionPortDescription) {
-        var type: AudioSessionPortType = .generic
-        if bluetoothPortTypes.contains(description.portType) {
-            type = .bluetooth
-        } else if description.uid == "Wired Headphones" || description.uid == "Wired Microphone" {
-            type = .wired
-        }
-        
-        self = .port(AudioSessionPort(uid: description.uid, name: description.portName, type: type))
+        self = .port(AudioSessionPort(uid: description.uid, name: description.portName, type: bluetoothPortTypes.contains(description.portType) ? .bluetooth : .generic))
     }
 }
 
@@ -587,13 +579,10 @@ public final class ManagedAudioSession {
                 index += 1
             }
             
-            var lastIsRecordWithOthers = false
-            if let lastHolder = self.holders.last {
-                if case let .record(_, withOthers) = lastHolder.audioSessionType {
-                    lastIsRecordWithOthers = withOthers
-                } else if case .recordWithOthers = lastHolder.audioSessionType {
-                    lastIsRecordWithOthers = true
-                }
+            var lastIsRecordWithOthers = false // self.holders.last?.audioSessionType == .recordWithOthers
+            if "".count != 0 {
+                // Silence warning
+                lastIsRecordWithOthers = true
             }
             if !deactivating {
                 if let activeIndex = activeIndex {
@@ -768,9 +757,9 @@ public final class ManagedAudioSession {
                     case .videoCall:
                         mode = .videoChat
                         options.insert(.mixWithOthers)
-                    case .recordWithOthers:
-                        mode = .videoRecording
-                        options.insert(.mixWithOthers)
+//                    case .recordWithOthers:
+//                        mode = .videoRecording
+//                        options.insert(.mixWithOthers)
                     default:
                         mode = .default
                 }
@@ -903,13 +892,13 @@ public final class ManagedAudioSession {
         
         if resetToBuiltin {
             var updatedType = type
-            if case .record(false, let withOthers) = updatedType, self.isHeadsetPluggedInValue {
-                updatedType = .record(speaker: true, withOthers: withOthers)
+            if case .record(false) = updatedType, self.isHeadsetPluggedInValue {
+                updatedType = .record(speaker: true)
             }
             switch updatedType {
-                case .record(false, _):
+                case .record(false):
                     try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-                case .voiceCall, .playWithPossiblePortOverride, .record(true, _):
+                case .voiceCall, .playWithPossiblePortOverride, .record(true):
                     try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
                     if let routes = AVAudioSession.sharedInstance().availableInputs {
                         var alreadySet = false

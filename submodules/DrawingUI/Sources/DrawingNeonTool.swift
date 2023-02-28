@@ -60,9 +60,8 @@ final class NeonTool: DrawingElement {
             self.layer.addSublayer(self.fillLayer)
         }
         
-        fileprivate func updatePath(_ path: CGPath, shadowPath: CGPath) {
+        fileprivate func updatePath(_ path: CGPath) {
             self.shadowLayer.path = path
-            self.shadowLayer.shadowPath = shadowPath
             self.borderLayer.path = path
             self.fillLayer.path = path
         }
@@ -82,7 +81,6 @@ final class NeonTool: DrawingElement {
     private var addedPaths = 0
     
     fileprivate var renderPath: CGPath?
-    fileprivate var shadowRenderPath: CGPath?
     
     var translation: CGPoint = .zero
         
@@ -93,7 +91,7 @@ final class NeonTool: DrawingElement {
     }
     
     var bounds: CGRect {
-        if let renderPath = self.shadowRenderPath {
+        if let renderPath = self.renderPath {
             return normalizeDrawingRect(renderPath.boundingBoxOfPath.insetBy(dx: -self.renderShadowRadius - 30.0, dy: -self.renderShadowRadius - 30.0), drawingSize: self.drawingSize)
         } else {
             return .zero
@@ -105,8 +103,8 @@ final class NeonTool: DrawingElement {
         self.drawingSize = drawingSize
         self.color = color
         
-        let strokeWidth = min(drawingSize.width, drawingSize.height) * 0.008
-        let shadowRadius = min(drawingSize.width, drawingSize.height) * 0.02
+        let strokeWidth = min(drawingSize.width, drawingSize.height) * 0.01
+        let shadowRadius = min(drawingSize.width, drawingSize.height) * 0.03
         
         let minLineWidth = max(1.0, max(drawingSize.width, drawingSize.height) * 0.002)
         let maxLineWidth = max(10.0, max(drawingSize.width, drawingSize.height) * 0.07)
@@ -140,11 +138,9 @@ final class NeonTool: DrawingElement {
             if let activePath {
                 path?.addPath(activePath.cgPath)
             }
-            if let renderPath = path?.copy(strokingWithWidth: self.renderLineWidth, lineCap: .round, lineJoin: .round, miterLimit: 0.0),
-               let shadowRenderPath = path?.copy(strokingWithWidth: self.renderLineWidth * 2.0, lineCap: .round, lineJoin: .round, miterLimit: 0.0) {
+            if let renderPath = path?.copy(strokingWithWidth: self.renderLineWidth, lineCap: .round, lineJoin: .round, miterLimit: 0.0) {   
                 self.renderPath = renderPath
-                self.shadowRenderPath = shadowRenderPath
-                currentRenderView.updatePath(renderPath, shadowPath: shadowRenderPath)
+                currentRenderView.updatePath(renderPath)
             }
         }
         
@@ -159,7 +155,7 @@ final class NeonTool: DrawingElement {
     }
         
     func draw(in context: CGContext, size: CGSize) {
-        guard let path = self.renderPath, let shadowPath = self.shadowRenderPath else {
+        guard let path = self.renderPath else {
             return
         }
         context.saveGState()
@@ -176,20 +172,15 @@ final class NeonTool: DrawingElement {
             fillColor = shadowColor
             shadowColor = UIColor(rgb: 0x440881)
         }
-        
-        let shadowOffset = CGSize(width: 3000.0, height: 3000.0)
-        context.translateBy(x: -shadowOffset.width, y: -shadowOffset.height)
-        
-        context.addPath(shadowPath)
+
+        context.addPath(path)
         context.setLineCap(.round)
         context.setFillColor(fillColor.cgColor)
         context.setStrokeColor(fillColor.cgColor)
         context.setLineWidth(self.renderStrokeWidth * 0.5)
-        context.setShadow(offset: shadowOffset, blur: self.renderShadowRadius * 1.9, color: shadowColor.withAlphaComponent(0.87).cgColor)
+        context.setShadow(offset: .zero, blur: self.renderShadowRadius * 1.9, color: shadowColor.cgColor)
         context.drawPath(using: .fillStroke)
 
-        context.translateBy(x: shadowOffset.width, y: shadowOffset.height)
-        
         context.addPath(path)
         context.setShadow(offset: .zero, blur: 0.0, color: UIColor.clear.cgColor)
         context.setLineWidth(self.renderStrokeWidth)

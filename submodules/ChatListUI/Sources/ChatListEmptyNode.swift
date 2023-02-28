@@ -12,7 +12,7 @@ import AccountContext
 
 final class ChatListEmptyNode: ASDisplayNode {
     enum Subject {
-        case chats(hasArchive: Bool)
+        case chats
         case filter(showEdit: Bool)
         case forum(hasGeneral: Bool)
     }
@@ -57,8 +57,6 @@ final class ChatListEmptyNode: ASDisplayNode {
         
         var gloss = true
         if case .filter = subject {
-            gloss = false
-        } else if case .chats(true) = subject {
             gloss = false
         }
         
@@ -134,8 +132,8 @@ final class ChatListEmptyNode: ASDisplayNode {
         var descriptionText = ""
         let buttonText: String
         switch self.subject {
-            case let .chats(hasArchive):
-                text = hasArchive ? strings.ChatList_EmptyChatListWithArchive : strings.ChatList_EmptyChatList
+            case .chats:
+                text = strings.ChatList_EmptyChatList
                 buttonText = strings.ChatList_EmptyChatListNewMessage
             case .filter:
                 text = strings.ChatList_EmptyChatListFilterTitle
@@ -243,6 +241,9 @@ final class ChatListEmptyNode: ASDisplayNode {
         }
         if self.secondaryButtonNode.frame.contains(point), !self.secondaryButtonNode.isHidden {
             return self.secondaryButtonNode.view.hitTest(self.view.convert(point, to: self.secondaryButtonNode.view), with: event)
+        }
+        if self.animationNode.frame.contains(point) {
+            return self.animationNode.view.hitTest(self.view.convert(point, to: self.animationNode.view), with: event)
         }
         return nil
     }

@@ -14,12 +14,6 @@ import OpenInExternalAppUI
 import ItemListPeerActionItem
 import StorageUsageScreen
 
-public enum AutomaticSaveIncomingPeerType {
-    case privateChats
-    case groups
-    case channels
-}
-
 private final class DataAndStorageControllerArguments {
     let openStorageUsage: () -> Void
     let openNetworkUsage: () -> Void
@@ -27,10 +21,8 @@ private final class DataAndStorageControllerArguments {
     let openAutomaticDownloadConnectionType: (AutomaticDownloadConnectionType) -> Void
     let resetAutomaticDownload: () -> Void
     let toggleVoiceUseLessData: (Bool) -> Void
-    let openSaveIncoming: (AutomaticSaveIncomingPeerType) -> Void
+    let openSaveIncomingPhotos: () -> Void
     let toggleSaveEditedPhotos: (Bool) -> Void
-    let togglePauseMusicOnRecording: (Bool) -> Void
-    let toggleRaiseToListen: (Bool) -> Void
     let toggleAutoplayGifs: (Bool) -> Void
     let toggleAutoplayVideos: (Bool) -> Void
     let toggleDownloadInBackground: (Bool) -> Void
@@ -38,17 +30,15 @@ private final class DataAndStorageControllerArguments {
     let openIntents: () -> Void
     let toggleEnableSensitiveContent: (Bool) -> Void
 
-    init(openStorageUsage: @escaping () -> Void, openNetworkUsage: @escaping () -> Void, openProxy: @escaping () -> Void,  openAutomaticDownloadConnectionType: @escaping (AutomaticDownloadConnectionType) -> Void, resetAutomaticDownload: @escaping () -> Void, toggleVoiceUseLessData: @escaping (Bool) -> Void, openSaveIncoming: @escaping (AutomaticSaveIncomingPeerType) -> Void, toggleSaveEditedPhotos: @escaping (Bool) -> Void, togglePauseMusicOnRecording: @escaping (Bool) -> Void, toggleRaiseToListen: @escaping (Bool) -> Void, toggleAutoplayGifs: @escaping (Bool) -> Void, toggleAutoplayVideos: @escaping (Bool) -> Void, toggleDownloadInBackground: @escaping (Bool) -> Void, openBrowserSelection: @escaping () -> Void, openIntents: @escaping () -> Void, toggleEnableSensitiveContent: @escaping (Bool) -> Void) {
+    init(openStorageUsage: @escaping () -> Void, openNetworkUsage: @escaping () -> Void, openProxy: @escaping () -> Void,  openAutomaticDownloadConnectionType: @escaping (AutomaticDownloadConnectionType) -> Void, resetAutomaticDownload: @escaping () -> Void, toggleVoiceUseLessData: @escaping (Bool) -> Void, openSaveIncomingPhotos: @escaping () -> Void, toggleSaveEditedPhotos: @escaping (Bool) -> Void, toggleAutoplayGifs: @escaping (Bool) -> Void, toggleAutoplayVideos: @escaping (Bool) -> Void, toggleDownloadInBackground: @escaping (Bool) -> Void, openBrowserSelection: @escaping () -> Void, openIntents: @escaping () -> Void, toggleEnableSensitiveContent: @escaping (Bool) -> Void) {
         self.openStorageUsage = openStorageUsage
         self.openNetworkUsage = openNetworkUsage
         self.openProxy = openProxy
         self.openAutomaticDownloadConnectionType = openAutomaticDownloadConnectionType
         self.resetAutomaticDownload = resetAutomaticDownload
         self.toggleVoiceUseLessData = toggleVoiceUseLessData
-        self.openSaveIncoming = openSaveIncoming
+        self.openSaveIncomingPhotos = openSaveIncomingPhotos
         self.toggleSaveEditedPhotos = toggleSaveEditedPhotos
-        self.togglePauseMusicOnRecording = togglePauseMusicOnRecording
-        self.toggleRaiseToListen = toggleRaiseToListen
         self.toggleAutoplayGifs = toggleAutoplayGifs
         self.toggleAutoplayVideos = toggleAutoplayVideos
         self.toggleDownloadInBackground = toggleDownloadInBackground
@@ -61,7 +51,6 @@ private final class DataAndStorageControllerArguments {
 private enum DataAndStorageSection: Int32 {
     case usage
     case autoDownload
-    case autoSave
     case backgroundDownload
     case autoPlay
     case voiceCalls
@@ -70,15 +59,12 @@ private enum DataAndStorageSection: Int32 {
     case enableSensitiveContent
 }
 
-public enum DataAndStorageEntryTag: ItemListItemTag, Equatable {
+public enum DataAndStorageEntryTag: ItemListItemTag {
     case automaticDownloadReset
     case autoplayGifs
     case autoplayVideos
     case saveEditedPhotos
     case downloadInBackground
-    case pauseMusicOnRecording
-    case raiseToListen
-    case autoSave(AutomaticSaveIncomingPeerType)
     
     public func isEqual(to other: ItemListItemTag) -> Bool {
         if let other = other as? DataAndStorageEntryTag, self == other {
@@ -90,17 +76,12 @@ public enum DataAndStorageEntryTag: ItemListItemTag, Equatable {
 }
 
 private enum DataAndStorageEntry: ItemListNodeEntry {
-    case storageUsage(PresentationTheme, String, String)
-    case networkUsage(PresentationTheme, String, String)
+    case storageUsage(PresentationTheme, String)
+    case networkUsage(PresentationTheme, String)
     case automaticDownloadHeader(PresentationTheme, String)
     case automaticDownloadCellular(PresentationTheme, String, String)
     case automaticDownloadWifi(PresentationTheme, String, String)
     case automaticDownloadReset(PresentationTheme, String, Bool)
-    
-    case autoSaveHeader(String)
-    case autoSaveItem(index: Int, type: AutomaticSaveIncomingPeerType, title: String, label: String, value: String)
-    case autoSaveInfo(String)
-    
     case downloadInBackground(PresentationTheme, String, Bool)
     case downloadInBackgroundInfo(PresentationTheme, String)
     
@@ -111,12 +92,10 @@ private enum DataAndStorageEntry: ItemListNodeEntry {
     case useLessVoiceDataInfo(PresentationTheme, String)
     case otherHeader(PresentationTheme, String)
     case shareSheet(PresentationTheme, String)
+    case saveIncomingPhotos(PresentationTheme, String)
     case saveEditedPhotos(PresentationTheme, String, Bool)
     case openLinksIn(PresentationTheme, String, String)
-    case pauseMusicOnRecording(PresentationTheme, String, Bool)
-    case raiseToListen(PresentationTheme, String, Bool)
-    case raiseToListenInfo(PresentationTheme, String)
-    
+
     case connectionHeader(PresentationTheme, String)
     case connectionProxy(PresentationTheme, String, String)
     case enableSensitiveContent(String, Bool)
@@ -127,15 +106,13 @@ private enum DataAndStorageEntry: ItemListNodeEntry {
                 return DataAndStorageSection.usage.rawValue
             case .automaticDownloadHeader, .automaticDownloadCellular, .automaticDownloadWifi, .automaticDownloadReset:
                 return DataAndStorageSection.autoDownload.rawValue
-            case .autoSaveHeader, .autoSaveItem, .autoSaveInfo:
-                return DataAndStorageSection.autoSave.rawValue
             case .downloadInBackground, .downloadInBackgroundInfo:
                 return DataAndStorageSection.backgroundDownload.rawValue
             case .useLessVoiceData, .useLessVoiceDataInfo:
                 return DataAndStorageSection.voiceCalls.rawValue
             case .autoplayHeader, .autoplayGifs, .autoplayVideos:
                 return DataAndStorageSection.autoPlay.rawValue
-            case .otherHeader, .shareSheet, .saveEditedPhotos, .openLinksIn, .pauseMusicOnRecording, .raiseToListen, .raiseToListenInfo:
+            case .otherHeader, .shareSheet, .saveIncomingPhotos, .saveEditedPhotos, .openLinksIn:
                 return DataAndStorageSection.other.rawValue
             case .connectionHeader, .connectionProxy:
                 return DataAndStorageSection.connection.rawValue
@@ -158,59 +135,49 @@ private enum DataAndStorageEntry: ItemListNodeEntry {
                 return 4
             case .automaticDownloadReset:
                 return 5
-            case .autoSaveHeader:
-                return 6
-            case let .autoSaveItem(index, _, _, _, _):
-                return 7 + Int32(index)
-            case .autoSaveInfo:
-                return 20
             case .downloadInBackground:
-                return 21
+                return 6
             case .downloadInBackgroundInfo:
-                return 22
+                return 7
             case .useLessVoiceData:
-                return 23
+                return 8
             case .useLessVoiceDataInfo:
-                return 24
+                return 9
             case .autoplayHeader:
-                return 25
+                return 10
             case .autoplayGifs:
-                return 26
+                return 11
             case .autoplayVideos:
-                return 27
+                return 12
             case .otherHeader:
-                return 28
+                return 13
             case .shareSheet:
-                return 29
+                return 14
+            case .saveIncomingPhotos:
+                return 15
             case .saveEditedPhotos:
-                return 31
+                return 16
             case .openLinksIn:
-                return 32
-            case .pauseMusicOnRecording:
-                return 33
-            case .raiseToListen:
-                return 34
-            case .raiseToListenInfo:
-                return 35
+                return 17
             case .connectionHeader:
-                return 36
+                return 18
             case .connectionProxy:
-                return 37
+                return 19
             case .enableSensitiveContent:
-                return 38
+                return 20
         }
     }
     
     static func ==(lhs: DataAndStorageEntry, rhs: DataAndStorageEntry) -> Bool {
         switch lhs {
-            case let .storageUsage(lhsTheme, lhsText, lhsValue):
-                if case let .storageUsage(rhsTheme, rhsText, rhsValue) = rhs, lhsTheme === rhsTheme, lhsText == rhsText, lhsValue == rhsValue {
+            case let .storageUsage(lhsTheme, lhsText):
+                if case let .storageUsage(rhsTheme, rhsText) = rhs, lhsTheme === rhsTheme, lhsText == rhsText {
                     return true
                 } else {
                     return false
                 }
-            case let .networkUsage(lhsTheme, lhsText, lhsValue):
-                if case let .networkUsage(rhsTheme, rhsText, rhsValue) = rhs, lhsTheme === rhsTheme, lhsText == rhsText, lhsValue == rhsValue {
+            case let .networkUsage(lhsTheme, lhsText):
+                if case let .networkUsage(rhsTheme, rhsText) = rhs, lhsTheme === rhsTheme, lhsText == rhsText {
                     return true
                 } else {
                     return false
@@ -235,24 +202,6 @@ private enum DataAndStorageEntry: ItemListNodeEntry {
                 }
             case let .automaticDownloadReset(lhsTheme, lhsText, lhsEnabled):
                 if case let .automaticDownloadReset(rhsTheme, rhsText, rhsEnabled) = rhs, lhsTheme === rhsTheme, lhsText == rhsText, lhsEnabled == rhsEnabled {
-                    return true
-                } else {
-                    return false
-                }
-            case let .autoSaveHeader(text):
-                if case .autoSaveHeader(text) = rhs {
-                    return true
-                } else {
-                    return false
-                }
-            case let .autoSaveItem(index, type, title, label, value):
-                if case .autoSaveItem(index, type, title, label, value) = rhs {
-                    return true
-                } else {
-                    return false
-                }
-            case let .autoSaveInfo(text):
-                if case .autoSaveInfo(text) = rhs {
                     return true
                 } else {
                     return false
@@ -299,6 +248,12 @@ private enum DataAndStorageEntry: ItemListNodeEntry {
                 } else {
                     return false
                 }
+            case let .saveIncomingPhotos(lhsTheme, lhsText):
+                if case let .saveIncomingPhotos(rhsTheme, rhsText) = rhs, lhsTheme === rhsTheme, lhsText == rhsText {
+                    return true
+                } else {
+                    return false
+                }
             case let .saveEditedPhotos(lhsTheme, lhsText, lhsValue):
                 if case let .saveEditedPhotos(rhsTheme, rhsText, rhsValue) = rhs, lhsTheme === rhsTheme, lhsText == rhsText, lhsValue == rhsValue {
                     return true
@@ -307,24 +262,6 @@ private enum DataAndStorageEntry: ItemListNodeEntry {
                 }
             case let .openLinksIn(lhsTheme, lhsText, lhsValue):
                 if case let .openLinksIn(rhsTheme, rhsText, rhsValue) = rhs, lhsTheme === rhsTheme, lhsText == rhsText, lhsValue == rhsValue {
-                    return true
-                } else {
-                    return false
-                }
-            case let .pauseMusicOnRecording(lhsTheme, lhsText, lhsValue):
-                if case let .pauseMusicOnRecording(rhsTheme, rhsText, rhsValue) = rhs, lhsTheme === rhsTheme, lhsText == rhsText, lhsValue == rhsValue {
-                    return true
-                } else {
-                    return false
-                }
-            case let .raiseToListen(lhsTheme, lhsText, lhsValue):
-                if case let .raiseToListen(rhsTheme, rhsText, rhsValue) = rhs, lhsTheme === rhsTheme, lhsText == rhsText, lhsValue == rhsValue {
-                    return true
-                } else {
-                    return false
-                }
-            case let .raiseToListenInfo(lhsTheme, lhsText):
-                if case let .raiseToListenInfo(rhsTheme, rhsText) = rhs, lhsTheme === rhsTheme, lhsText == rhsText {
                     return true
                 } else {
                     return false
@@ -369,12 +306,12 @@ private enum DataAndStorageEntry: ItemListNodeEntry {
     func item(presentationData: ItemListPresentationData, arguments: Any) -> ListViewItem {
         let arguments = arguments as! DataAndStorageControllerArguments
         switch self {
-            case let .storageUsage(_, text, value):
-                return ItemListDisclosureItem(presentationData: presentationData, icon: UIImage(bundleImageName: "Settings/Menu/Storage")?.precomposed(), title: text, label: value, sectionId: self.section, style: .blocks, action: {
+            case let .storageUsage(_, text):
+                return ItemListDisclosureItem(presentationData: presentationData, icon: UIImage(bundleImageName: "Settings/Menu/Storage")?.precomposed(), title: text, label: "", sectionId: self.section, style: .blocks, action: {
                     arguments.openStorageUsage()
                 })
-            case let .networkUsage(_, text, value):
-                return ItemListDisclosureItem(presentationData: presentationData, icon: UIImage(bundleImageName: "Settings/Menu/Network")?.precomposed(), title: text, label: value, sectionId: self.section, style: .blocks, action: {
+            case let .networkUsage(_, text):
+                return ItemListDisclosureItem(presentationData: presentationData, icon: UIImage(bundleImageName: "Settings/Menu/Network")?.precomposed(), title: text, label: "", sectionId: self.section, style: .blocks, action: {
                     arguments.openNetworkUsage()
                 })
             case let .automaticDownloadHeader(_, text):
@@ -397,23 +334,6 @@ private enum DataAndStorageEntry: ItemListNodeEntry {
                         arguments.resetAutomaticDownload()
                     }
                 })
-            case let .autoSaveHeader(text):
-                return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
-            case let .autoSaveItem(_, type, title, label, value):
-                let iconName: String
-                switch type {
-                case .privateChats:
-                    iconName = "Settings/Menu/EditProfile"
-                case .groups:
-                    iconName = "Settings/Menu/GroupChats"
-                case .channels:
-                    iconName = "Settings/Menu/Channels"
-                }
-                return ItemListDisclosureItem(presentationData: presentationData, icon: UIImage(bundleImageName: iconName)?.precomposed(), title: title, label: value, labelStyle: .text, additionalDetailLabel: label.isEmpty ? nil : label, sectionId: self.section, style: .blocks, action: {
-                    arguments.openSaveIncoming(type)
-                })
-            case let .autoSaveInfo(text):
-                return ItemListTextItem(presentationData: presentationData, text: .markdown(text), sectionId: self.section)
             case let .autoplayHeader(_, text):
                 return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
             case let .autoplayGifs(_, text, value):
@@ -436,6 +356,10 @@ private enum DataAndStorageEntry: ItemListNodeEntry {
                 return ItemListDisclosureItem(presentationData: presentationData, title: text, label: "", sectionId: self.section, style: .blocks, action: {
                     arguments.openIntents()
                 })
+            case let .saveIncomingPhotos(_, text):
+                return ItemListDisclosureItem(presentationData: presentationData, title: text, label: "", sectionId: self.section, style: .blocks, action: {
+                    arguments.openSaveIncomingPhotos()
+                })
             case let .saveEditedPhotos(_, text, value):
                 return ItemListSwitchItem(presentationData: presentationData, title: text, value: value, sectionId: self.section, style: .blocks, updated: { value in
                     arguments.toggleSaveEditedPhotos(value)
@@ -444,16 +368,6 @@ private enum DataAndStorageEntry: ItemListNodeEntry {
                 return ItemListDisclosureItem(presentationData: presentationData, title: text, label: value, sectionId: self.section, style: .blocks, action: {
                     arguments.openBrowserSelection()
                 })
-            case let .pauseMusicOnRecording(_, text, value):
-                return ItemListSwitchItem(presentationData: presentationData, title: text, value: value, sectionId: self.section, style: .blocks, updated: { value in
-                    arguments.togglePauseMusicOnRecording(value)
-                }, tag: DataAndStorageEntryTag.pauseMusicOnRecording)
-            case let .raiseToListen(_, text, value):
-                return ItemListSwitchItem(presentationData: presentationData, title: text, value: value, sectionId: self.section, style: .blocks, updated: { value in
-                    arguments.toggleRaiseToListen(value)
-                }, tag: DataAndStorageEntryTag.raiseToListen)
-            case let .raiseToListenInfo(_, text):
-                return ItemListTextItem(presentationData: presentationData, text: .markdown(text), sectionId: self.section)
             case let .downloadInBackground(_, text, value):
                 return ItemListSwitchItem(presentationData: presentationData, title: text, value: value, sectionId: self.section, style: .blocks, updated: { value in
                     arguments.toggleDownloadInBackground(value)
@@ -484,21 +398,19 @@ private struct DataAndStorageData: Equatable {
     let automaticMediaDownloadSettings: MediaAutoDownloadSettings
     let autodownloadSettings: AutodownloadSettings
     let generatedMediaStoreSettings: GeneratedMediaStoreSettings
-    let mediaInputSettings: MediaInputSettings
     let voiceCallSettings: VoiceCallSettings
     let proxySettings: ProxySettings?
     
-    init(automaticMediaDownloadSettings: MediaAutoDownloadSettings, autodownloadSettings: AutodownloadSettings, generatedMediaStoreSettings: GeneratedMediaStoreSettings, mediaInputSettings: MediaInputSettings, voiceCallSettings: VoiceCallSettings, proxySettings: ProxySettings?) {
+    init(automaticMediaDownloadSettings: MediaAutoDownloadSettings, autodownloadSettings: AutodownloadSettings, generatedMediaStoreSettings: GeneratedMediaStoreSettings, voiceCallSettings: VoiceCallSettings, proxySettings: ProxySettings?) {
         self.automaticMediaDownloadSettings = automaticMediaDownloadSettings
         self.autodownloadSettings = autodownloadSettings
         self.generatedMediaStoreSettings = generatedMediaStoreSettings
-        self.mediaInputSettings = mediaInputSettings
         self.voiceCallSettings = voiceCallSettings
         self.proxySettings = proxySettings
     }
     
     static func ==(lhs: DataAndStorageData, rhs: DataAndStorageData) -> Bool {
-        return lhs.automaticMediaDownloadSettings == rhs.automaticMediaDownloadSettings && lhs.generatedMediaStoreSettings == rhs.generatedMediaStoreSettings && lhs.mediaInputSettings == rhs.mediaInputSettings && lhs.voiceCallSettings == rhs.voiceCallSettings && lhs.proxySettings == rhs.proxySettings
+        return lhs.automaticMediaDownloadSettings == rhs.automaticMediaDownloadSettings && lhs.generatedMediaStoreSettings == rhs.generatedMediaStoreSettings && lhs.voiceCallSettings == rhs.voiceCallSettings && lhs.proxySettings == rhs.proxySettings
     }
 }
 
@@ -566,79 +478,11 @@ private func stringForAutoDownloadSetting(strings: PresentationStrings, decimalS
     }
 }
 
-private func autosaveLabelAndValue(presentationData: PresentationData, settings: MediaAutoSaveSettings, peerType: AutomaticSaveIncomingPeerType, exceptionPeers: [EnginePeer.Id: EnginePeer?]) -> (label: String, value: String) {
-    var exceptionCount = 0
-    let configuration: MediaAutoSaveConfiguration
-    switch peerType {
-    case .privateChats:
-        configuration = settings.configurations[.users] ?? .default
-    case .groups:
-        configuration = settings.configurations[.groups] ?? .default
-    case .channels:
-        configuration = settings.configurations[.channels] ?? .default
-    }
-    
-    for exception in settings.exceptions {
-        if let maybePeer = exceptionPeers[exception.id], let peer = maybePeer {
-            let peerTypeValue: AutomaticSaveIncomingPeerType
-            switch peer {
-            case .user, .secretChat:
-                peerTypeValue = .privateChats
-            case .legacyGroup:
-                peerTypeValue = .groups
-            case let .channel(channel):
-                if case .broadcast = channel.info {
-                    peerTypeValue = .channels
-                } else {
-                    peerTypeValue = .groups
-                }
-            }
-            
-            if peerTypeValue == peerType {
-                exceptionCount += 1
-            }
-        }
-    }
-    
-    let value: String
-    if configuration.photo || configuration.video {
-        value = presentationData.strings.Settings_AutosaveMediaOn
-    } else {
-        value = presentationData.strings.Settings_AutosaveMediaOff
-    }
-    
-    var label = ""
-    if configuration.photo && configuration.video {
-        label.append(presentationData.strings.Settings_AutosaveMediaAllMedia(dataSizeString(Int(configuration.maximumVideoSize), formatting: DataSizeStringFormatting(presentationData: presentationData))).string)
-    } else {
-        if configuration.photo {
-            if !label.isEmpty {
-                label.append(", ")
-            }
-            label.append(presentationData.strings.Settings_AutosaveMediaPhoto)
-        } else if configuration.video {
-            if !label.isEmpty {
-                label.append(", ")
-            }
-            label.append(presentationData.strings.Settings_AutosaveMediaVideo(dataSizeString(Int(configuration.maximumVideoSize), formatting: DataSizeStringFormatting(presentationData: presentationData))).string)
-        }
-    }
-    
-    if exceptionCount != 0 {
-        if !label.isEmpty {
-            label.append(", ")
-        }
-        label.append(presentationData.strings.Notifications_CategoryExceptions(Int32(exceptionCount)))
-    }
-    
-    return (label, value)
-}
-
-private func dataAndStorageControllerEntries(state: DataAndStorageControllerState, data: DataAndStorageData, presentationData: PresentationData, defaultWebBrowser: String, contentSettingsConfiguration: ContentSettingsConfiguration?, networkUsage: Int64, storageUsage: Int64, mediaAutoSaveSettings: MediaAutoSaveSettings, autosaveExceptionPeers: [EnginePeer.Id: EnginePeer?]) -> [DataAndStorageEntry] {
+private func dataAndStorageControllerEntries(state: DataAndStorageControllerState, data: DataAndStorageData, presentationData: PresentationData, defaultWebBrowser: String, contentSettingsConfiguration: ContentSettingsConfiguration?) -> [DataAndStorageEntry] {
     var entries: [DataAndStorageEntry] = []
     
-    entries.append(.storageUsage(presentationData.theme, presentationData.strings.ChatSettings_Cache, dataSizeString(storageUsage, formatting: DataSizeStringFormatting(presentationData: presentationData))))
-    entries.append(.networkUsage(presentationData.theme, presentationData.strings.NetworkUsageSettings_Title, dataSizeString(networkUsage, formatting: DataSizeStringFormatting(presentationData: presentationData))))
+    entries.append(.storageUsage(presentationData.theme, presentationData.strings.ChatSettings_Cache))
+    entries.append(.networkUsage(presentationData.theme, presentationData.strings.NetworkUsageSettings_Title))
     
     entries.append(.automaticDownloadHeader(presentationData.theme, presentationData.strings.ChatSettings_AutoDownloadTitle.uppercased()))
     entries.append(.automaticDownloadCellular(presentationData.theme, presentationData.strings.ChatSettings_AutoDownloadUsingCellular, stringForAutoDownloadSetting(strings: presentationData.strings, decimalSeparator: presentationData.dateTimeFormat.decimalSeparator, settings: data.automaticMediaDownloadSettings, connectionType: .cellular)))
@@ -647,17 +491,8 @@ private func dataAndStorageControllerEntries(state: DataAndStorageControllerStat
     let defaultSettings = MediaAutoDownloadSettings.defaultSettings
     entries.append(.automaticDownloadReset(presentationData.theme, presentationData.strings.ChatSettings_AutoDownloadReset, data.automaticMediaDownloadSettings.cellular != defaultSettings.cellular || data.automaticMediaDownloadSettings.wifi != defaultSettings.wifi))
     
-    entries.append(.autoSaveHeader(presentationData.strings.Settings_SaveToCameraRollSection))
-    
-    let privateLabelAndValue = autosaveLabelAndValue(presentationData: presentationData, settings: mediaAutoSaveSettings, peerType: .privateChats, exceptionPeers: autosaveExceptionPeers)
-    let groupsLabelAndValue = autosaveLabelAndValue(presentationData: presentationData, settings: mediaAutoSaveSettings, peerType: .groups, exceptionPeers: autosaveExceptionPeers)
-    let channelsLabelAndValue = autosaveLabelAndValue(presentationData: presentationData, settings: mediaAutoSaveSettings, peerType: .channels, exceptionPeers: autosaveExceptionPeers)
-    
-    entries.append(.autoSaveItem(index: 0, type: .privateChats, title: presentationData.strings.Notifications_PrivateChats, label: privateLabelAndValue.label, value: privateLabelAndValue.value))
-    entries.append(.autoSaveItem(index: 1, type: .groups, title: presentationData.strings.Notifications_GroupChats, label: groupsLabelAndValue.label, value: groupsLabelAndValue.value))
-    entries.append(.autoSaveItem(index: 2, type: .channels, title: presentationData.strings.Notifications_Channels, label: channelsLabelAndValue.label, value: channelsLabelAndValue.value))
-    entries.append(.autoSaveInfo(presentationData.strings.Settings_SaveToCameraRollInfo))
-    
+    entries.append(.downloadInBackground(presentationData.theme, presentationData.strings.ChatSettings_DownloadInBackground, data.automaticMediaDownloadSettings.downloadInBackground))
+    entries.append(.downloadInBackgroundInfo(presentationData.theme, presentationData.strings.ChatSettings_DownloadInBackgroundInfo))
     
     let dataSaving = effectiveDataSaving(for: data.voiceCallSettings, autodownloadSettings: data.autodownloadSettings)
     entries.append(.useLessVoiceData(presentationData.theme, presentationData.strings.ChatSettings_UseLessDataForCalls, dataSaving != .never))
@@ -671,11 +506,9 @@ private func dataAndStorageControllerEntries(state: DataAndStorageControllerStat
     if #available(iOSApplicationExtension 13.2, iOS 13.2, *) {
         entries.append(.shareSheet(presentationData.theme, presentationData.strings.ChatSettings_IntentsSettings))
     }
+    entries.append(.saveIncomingPhotos(presentationData.theme, presentationData.strings.Settings_SaveIncomingPhotos))
     entries.append(.saveEditedPhotos(presentationData.theme, presentationData.strings.Settings_SaveEditedPhotos, data.generatedMediaStoreSettings.storeEditedPhotos))
     entries.append(.openLinksIn(presentationData.theme, presentationData.strings.ChatSettings_OpenLinksIn, defaultWebBrowser))
-    entries.append(.pauseMusicOnRecording(presentationData.theme, presentationData.strings.Settings_PauseMusicOnRecording, data.mediaInputSettings.pauseMusicOnRecording))
-    entries.append(.raiseToListen(presentationData.theme, presentationData.strings.Settings_RaiseToListen, data.mediaInputSettings.enableRaiseToSpeak))
-    entries.append(.raiseToListenInfo(presentationData.theme, presentationData.strings.Settings_RaiseToListenInfo))
 
     let proxyValue: String
     if let proxySettings = data.proxySettings, let activeServer = proxySettings.activeServer, proxySettings.enabled {
@@ -721,69 +554,8 @@ public func dataAndStorageController(context: AccountContext, focusOnItemTag: Da
     contentSettingsConfiguration.set(.single(nil)
     |> then(updatedContentSettingsConfiguration))
     
-    struct UsageData: Equatable {
-        var network: Int64
-        var storage: Int64
-    }
-    let usageSignal: Signal<UsageData, NoError> = combineLatest(
-        context.account.postbox.mediaBox.storageBox.totalSize(),
-        context.account.postbox.mediaBox.cacheStorageBox.totalSize(),
-        accountNetworkUsageStats(account: context.account, reset: [])
-    )
-    |> map { disk1, disk2, networkStats -> UsageData in
-        var network: Int64 = 0
-        
-        var keys: [KeyPath<NetworkUsageStats, Int64>] = []
-        
-        keys.append(\.generic.cellular.outgoing)
-        keys.append(\.generic.cellular.incoming)
-        keys.append(\.generic.wifi.incoming)
-        keys.append(\.generic.wifi.outgoing)
-        
-        keys.append(\.image.cellular.outgoing)
-        keys.append(\.image.cellular.incoming)
-        keys.append(\.image.wifi.incoming)
-        keys.append(\.image.wifi.outgoing)
-        
-        keys.append(\.video.cellular.outgoing)
-        keys.append(\.video.cellular.incoming)
-        keys.append(\.video.wifi.incoming)
-        keys.append(\.video.wifi.outgoing)
-        
-        keys.append(\.audio.cellular.outgoing)
-        keys.append(\.audio.cellular.incoming)
-        keys.append(\.audio.wifi.incoming)
-        keys.append(\.audio.wifi.outgoing)
-        
-        keys.append(\.file.cellular.outgoing)
-        keys.append(\.file.cellular.incoming)
-        keys.append(\.file.wifi.incoming)
-        keys.append(\.file.wifi.outgoing)
-        
-        keys.append(\.call.cellular.outgoing)
-        keys.append(\.call.cellular.incoming)
-        keys.append(\.call.wifi.incoming)
-        keys.append(\.call.wifi.outgoing)
-        
-        keys.append(\.sticker.cellular.outgoing)
-        keys.append(\.sticker.cellular.incoming)
-        keys.append(\.sticker.wifi.incoming)
-        keys.append(\.sticker.wifi.outgoing)
-        
-        keys.append(\.voiceMessage.cellular.outgoing)
-        keys.append(\.voiceMessage.cellular.incoming)
-        keys.append(\.voiceMessage.wifi.incoming)
-        keys.append(\.voiceMessage.wifi.outgoing)
-        
-        for key in keys {
-            network += networkStats[keyPath: key]
-        }
-        
-        return UsageData(network: network, storage: disk1 + disk2)
-    }
-    
     let dataAndStorageDataPromise = Promise<DataAndStorageData>()
-    dataAndStorageDataPromise.set(context.sharedContext.accountManager.sharedData(keys: [SharedDataKeys.autodownloadSettings, ApplicationSpecificSharedDataKeys.automaticMediaDownloadSettings, ApplicationSpecificSharedDataKeys.generatedMediaStoreSettings, ApplicationSpecificSharedDataKeys.voiceCallSettings, ApplicationSpecificSharedDataKeys.mediaInputSettings, SharedDataKeys.proxySettings])
+    dataAndStorageDataPromise.set(context.sharedContext.accountManager.sharedData(keys: [SharedDataKeys.autodownloadSettings, ApplicationSpecificSharedDataKeys.automaticMediaDownloadSettings, ApplicationSpecificSharedDataKeys.generatedMediaStoreSettings, ApplicationSpecificSharedDataKeys.voiceCallSettings, SharedDataKeys.proxySettings])
     |> map { sharedData -> DataAndStorageData in
         var automaticMediaDownloadSettings: MediaAutoDownloadSettings
         if let value = sharedData.entries[ApplicationSpecificSharedDataKeys.automaticMediaDownloadSettings]?.get(MediaAutoDownloadSettings.self) {
@@ -807,13 +579,6 @@ public func dataAndStorageController(context: AccountContext, focusOnItemTag: Da
             generatedMediaStoreSettings = GeneratedMediaStoreSettings.defaultSettings
         }
         
-        let mediaInputSettings: MediaInputSettings
-        if let value = sharedData.entries[ApplicationSpecificSharedDataKeys.mediaInputSettings]?.get(MediaInputSettings.self) {
-            mediaInputSettings = value
-        } else {
-            mediaInputSettings = MediaInputSettings.defaultSettings
-        }
-        
         let voiceCallSettings: VoiceCallSettings
         if let value = sharedData.entries[ApplicationSpecificSharedDataKeys.voiceCallSettings]?.get(VoiceCallSettings.self) {
             voiceCallSettings = value
@@ -826,44 +591,16 @@ public func dataAndStorageController(context: AccountContext, focusOnItemTag: Da
             proxySettings = value
         }
         
-        return DataAndStorageData(automaticMediaDownloadSettings: automaticMediaDownloadSettings, autodownloadSettings: autodownloadSettings, generatedMediaStoreSettings: generatedMediaStoreSettings, mediaInputSettings: mediaInputSettings, voiceCallSettings: voiceCallSettings, proxySettings: proxySettings)
+        return DataAndStorageData(automaticMediaDownloadSettings: automaticMediaDownloadSettings, autodownloadSettings: autodownloadSettings, generatedMediaStoreSettings: generatedMediaStoreSettings, voiceCallSettings: voiceCallSettings, proxySettings: proxySettings)
     })
     
     let arguments = DataAndStorageControllerArguments(openStorageUsage: {
         pushControllerImpl?(StorageUsageScreen(context: context, makeStorageUsageExceptionsScreen: { category in
             return storageUsageExceptionsScreen(context: context, category: category)
         }))
+        //pushControllerImpl?(storageUsageController(context: context, cacheUsagePromise: cacheUsagePromise))
     }, openNetworkUsage: {
-        let mediaAutoDownloadSettings = context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.automaticMediaDownloadSettings])
-        |> map { sharedData -> MediaAutoDownloadSettings in
-            var automaticMediaDownloadSettings: MediaAutoDownloadSettings
-            if let value = sharedData.entries[ApplicationSpecificSharedDataKeys.automaticMediaDownloadSettings]?.get(MediaAutoDownloadSettings.self) {
-                automaticMediaDownloadSettings = value
-            } else {
-                automaticMediaDownloadSettings = .defaultSettings
-            }
-            return automaticMediaDownloadSettings
-        }
-        
-        let _ = (combineLatest(
-            accountNetworkUsageStats(account: context.account, reset: []),
-            mediaAutoDownloadSettings
-        )
-        |> take(1)
-        |> deliverOnMainQueue).start(next: { stats, mediaAutoDownloadSettings in
-            var stats = stats
-            
-            if stats.resetWifiTimestamp == 0 {
-                var value = stat()
-                if stat(context.account.basePath, &value) == 0 {
-                    stats.resetWifiTimestamp = Int32(value.st_ctimespec.tv_sec)
-                }
-            }
-            
-            pushControllerImpl?(DataUsageScreen(context: context, stats: stats, mediaAutoDownloadSettings: mediaAutoDownloadSettings, makeAutodownloadSettingsController: { isCellular in
-                return autodownloadMediaConnectionTypeController(context: context, connectionType: isCellular ? .cellular : .wifi)
-            }))
-        })
+        pushControllerImpl?(networkUsageStatsController(context: context))
     }, openProxy: {
         pushControllerImpl?(proxySettingsController(context: context))
     }, openAutomaticDownloadConnectionType: { connectionType in
@@ -896,19 +633,11 @@ public func dataAndStorageController(context: AccountContext, focusOnItemTag: Da
             current.dataSaving = value ? .always : .never
             return current
         }).start()
-    }, openSaveIncoming: { type in
-        pushControllerImpl?(saveIncomingMediaController(context: context, scope: .peerType(type)))
+    }, openSaveIncomingPhotos: {
+        pushControllerImpl?(saveIncomingMediaController(context: context))
     }, toggleSaveEditedPhotos: { value in
         let _ = updateGeneratedMediaStoreSettingsInteractively(accountManager: context.sharedContext.accountManager, { current in
             return current.withUpdatedStoreEditedPhotos(value)
-        }).start()
-    }, togglePauseMusicOnRecording: { value in
-        let _ = updateMediaInputSettingsInteractively(accountManager: context.sharedContext.accountManager, { current in
-            return current.withUpdatedPauseMusicOnRecording(value)
-        }).start()
-    }, toggleRaiseToListen: { value in
-        let _ = updateMediaInputSettingsInteractively(accountManager: context.sharedContext.accountManager, {
-            $0.withUpdatedEnableRaiseToSpeak(value)
         }).start()
     }, toggleAutoplayGifs: { value in
         let _ = updateMediaDownloadSettingsInteractively(accountManager: context.sharedContext.accountManager, { settings in
@@ -945,35 +674,15 @@ public func dataAndStorageController(context: AccountContext, focusOnItemTag: Da
         })
         updateSensitiveContentDisposable.set(updateRemoteContentSettingsConfiguration(postbox: context.account.postbox, network: context.account.network, sensitiveContentEnabled: value).start())
     })
-    
-    let preferencesKey: PostboxViewKey = .preferences(keys: Set([ApplicationSpecificPreferencesKeys.mediaAutoSaveSettings]))
-    let preferences = context.account.postbox.combinedView(keys: [preferencesKey])
-    |> map { views -> MediaAutoSaveSettings in
-        guard let view = views.views[preferencesKey] as? PreferencesView else {
-            return .default
-        }
-        return view.values[ApplicationSpecificPreferencesKeys.mediaAutoSaveSettings]?.get(MediaAutoSaveSettings.self) ?? MediaAutoSaveSettings.default
-    }
-    
-    let autosaveExceptionPeers: Signal<[EnginePeer.Id: EnginePeer?], NoError> = preferences
-    |> mapToSignal { mediaAutoSaveSettings -> Signal<[EnginePeer.Id: EnginePeer?], NoError> in
-        let peerIds = mediaAutoSaveSettings.exceptions.map(\.id)
-        return context.engine.data.get(EngineDataMap(
-            peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init(id:))
-        ))
-    }
 
     let signal = combineLatest(queue: .mainQueue(),
         context.sharedContext.presentationData,
         statePromise.get(),
         dataAndStorageDataPromise.get(),
         context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.webBrowserSettings]),
-        contentSettingsConfiguration.get(),
-        preferences,
-        usageSignal,
-        autosaveExceptionPeers
+        contentSettingsConfiguration.get()
     )
-    |> map { presentationData, state, dataAndStorageData, sharedData, contentSettingsConfiguration, mediaAutoSaveSettings, usageSignal, autosaveExceptionPeers -> (ItemListControllerState, (ItemListNodeState, Any)) in
+    |> map { presentationData, state, dataAndStorageData, sharedData, contentSettingsConfiguration -> (ItemListControllerState, (ItemListNodeState, Any)) in
         let webBrowserSettings = sharedData.entries[ApplicationSpecificSharedDataKeys.webBrowserSettings]?.get(WebBrowserSettings.self) ?? WebBrowserSettings.defaultSettings
         let options = availableOpenInOptions(context: context, item: .url(url: "https://telegram.org"))
         let defaultWebBrowser: String
@@ -984,7 +693,7 @@ public func dataAndStorageController(context: AccountContext, focusOnItemTag: Da
         }
         
         let controllerState = ItemListControllerState(presentationData: ItemListPresentationData(presentationData), title: .text(presentationData.strings.ChatSettings_Title), leftNavigationButton: nil, rightNavigationButton: nil, backNavigationButton: ItemListBackButton(title: presentationData.strings.Common_Back), animateChanges: false)
-        let listState = ItemListNodeState(presentationData: ItemListPresentationData(presentationData), entries: dataAndStorageControllerEntries(state: state, data: dataAndStorageData, presentationData: presentationData, defaultWebBrowser: defaultWebBrowser, contentSettingsConfiguration: contentSettingsConfiguration, networkUsage: usageSignal.network, storageUsage: usageSignal.storage, mediaAutoSaveSettings: mediaAutoSaveSettings, autosaveExceptionPeers: autosaveExceptionPeers), style: .blocks, ensureVisibleItemTag: focusOnItemTag, emptyStateItem: nil, animateChanges: false)
+        let listState = ItemListNodeState(presentationData: ItemListPresentationData(presentationData), entries: dataAndStorageControllerEntries(state: state, data: dataAndStorageData, presentationData: presentationData, defaultWebBrowser: defaultWebBrowser, contentSettingsConfiguration: contentSettingsConfiguration), style: .blocks, ensureVisibleItemTag: focusOnItemTag, emptyStateItem: nil, animateChanges: false)
         
         return (controllerState, (listState, arguments))
     } |> afterDisposed {

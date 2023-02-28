@@ -28,27 +28,13 @@ enum CachedSentMediaReferenceKey {
     }
 }
 
-private struct CachedMediaReferenceEntry: Codable {
-    var data: Data
-}
-
 func cachedSentMediaReference(postbox: Postbox, key: CachedSentMediaReferenceKey) -> Signal<Media?, NoError> {
-    return postbox.transaction { transaction -> Media? in
-        guard let entry = transaction.retrieveItemCacheEntry(id: ItemCacheEntryId(collectionId: Namespaces.CachedItemCollection.cachedSentMediaReferences, key: key.key))?.get(CachedMediaReferenceEntry.self) else {
-            return nil
-        }
-        
-        return PostboxDecoder(buffer: MemoryBuffer(data: entry.data)).decodeRootObject() as? Media
-    }
+    return .single(nil)
+    /*return postbox.transaction { transaction -> Media? in
+        return transaction.retrieveItemCacheEntry(id: ItemCacheEntryId(collectionId: Namespaces.CachedItemCollection.cachedSentMediaReferences, key: key.key)) as? Media
+    }*/
 }
 
 func storeCachedSentMediaReference(transaction: Transaction, key: CachedSentMediaReferenceKey, media: Media) {
-    let encoder = PostboxEncoder()
-    encoder.encodeRootObject(media)
-    let mediaData = encoder.makeData()
-    
-    guard let entry = CodableEntry(CachedMediaReferenceEntry(data: mediaData)) else {
-        return
-    }
-    transaction.putItemCacheEntry(id: ItemCacheEntryId(collectionId: Namespaces.CachedItemCollection.cachedSentMediaReferences, key: key.key), entry: entry)
+    //transaction.putItemCacheEntry(id: ItemCacheEntryId(collectionId: Namespaces.CachedItemCollection.cachedSentMediaReferences, key: key.key), entry: media)
 }

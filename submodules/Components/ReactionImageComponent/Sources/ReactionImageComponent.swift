@@ -21,12 +21,25 @@ public func reactionStaticImage(context: AccountContext, animation: TelegramMedi
         return Signal { subscriber in
             let fetchDisposable = fetchedMediaResource(mediaBox: context.account.postbox.mediaBox, userLocation: .other, userContentType: .image, reference: MediaResourceReference.standalone(resource: animation.resource)).start()
             
-            var customColor: UIColor?
-            if animation.isCustomTemplateEmoji {
-                customColor = nil
+            let type: AnimationCacheAnimationType
+            if animation.isVideoSticker || animation.isVideoEmoji {
+                type = .video
+            } else if animation.isAnimatedSticker {
+                type = .lottie
+            } else {
+                type = .still
             }
             
-            let fetchFrame = animationCacheFetchFile(context: context, userLocation: .other, userContentType: .sticker, resource: MediaResourceReference.standalone(resource: animation.resource), type: AnimationCacheAnimationType(file: animation), keyframeOnly: true, customColor: customColor)
+            var customColor: UIColor?
+            for attribute in animation.attributes {
+                if case let .CustomEmoji(_, isSingleColor, _, _) = attribute {
+                    if isSingleColor {
+                        customColor = nil
+                    }
+                }
+            }
+            
+            let fetchFrame = animationCacheFetchFile(context: context, userLocation: .other, userContentType: .sticker, resource: MediaResourceReference.standalone(resource: animation.resource), type: type, keyframeOnly: true, customColor: customColor)
             
             class AnimationCacheItemWriterImpl: AnimationCacheItemWriter {
                 let queue: Queue

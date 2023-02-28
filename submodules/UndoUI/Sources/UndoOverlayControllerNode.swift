@@ -191,7 +191,7 @@ final class UndoOverlayControllerNode: ViewControllerTracingNode {
                     return ("URL", contents)
                 }), textAlignment: .natural)
                 self.textNode.attributedText = attributedText
-                self.textNode.maximumNumberOfLines = 10
+                self.textNode.maximumNumberOfLines = 2
                 displayUndo = false
                 self.originalRemainingSeconds = Double(max(5, min(8, text.count / 14)))
             
@@ -540,21 +540,11 @@ final class UndoOverlayControllerNode: ViewControllerTracingNode {
                     displayUndo = false
                 }
                 self.originalRemainingSeconds = duration
-            case let .audioRate(rate, text):
+            case let .audioRate(slowdown, text):
                 self.avatarNode = nil
                 self.iconNode = nil
                 self.iconCheckNode = nil
-            
-                let animationName: String
-                if rate == 1.5 {
-                    animationName = "anim_voice1_5x"
-                } else if rate == 2.0 {
-                    animationName = "anim_voice2x"
-                } else {
-                    animationName = "anim_voice1x"
-                }
-            
-                self.animationNode = AnimationNode(animation: animationName, colors: [:], scale: 0.066)
+                self.animationNode = AnimationNode(animation: slowdown ? "anim_voicespeedstop" : "anim_voicespeed", colors: [:], scale: 0.066)
                 self.animatedStickerNode = nil
                 
                 let body = MarkdownAttributeSet(font: Font.regular(14.0), textColor: .white)
@@ -840,7 +830,6 @@ final class UndoOverlayControllerNode: ViewControllerTracingNode {
                 self.avatarNode = nil
                 self.iconNode = nil
                 self.iconCheckNode = nil
-            
                 self.animationNode = AnimationNode(animation: animation, colors: colors, scale: scale)
                 self.animatedStickerNode = nil
                 if let title = title {
@@ -871,7 +860,7 @@ final class UndoOverlayControllerNode: ViewControllerTracingNode {
                 } else {
                     displayUndo = false
                 }
-            case let .image(image, title, text, round, customUndoText):
+            case let .image(image, title, text, round, undo):
                 self.avatarNode = nil
                 self.iconNode = ASImageNode()
                 self.iconNode?.clipsToBounds = true
@@ -896,13 +885,8 @@ final class UndoOverlayControllerNode: ViewControllerTracingNode {
                 }), textAlignment: .natural)
                 self.textNode.attributedText = attributedText
 
-                if let customUndoText = customUndoText {
-                    undoText = customUndoText
-                    displayUndo = true
-                } else {
-                    displayUndo = false
-                }
-                self.originalRemainingSeconds = displayUndo ? 5 : 3
+                displayUndo = undo
+                self.originalRemainingSeconds = undo ? 5 : 3
             
                 if text.contains("](") {
                     isUserInteractionEnabled = true

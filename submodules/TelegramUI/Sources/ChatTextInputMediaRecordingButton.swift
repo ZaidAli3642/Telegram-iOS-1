@@ -12,7 +12,6 @@ import AudioBlob
 import ChatPresentationInterfaceState
 import ComponentFlow
 import LottieAnimationComponent
-import LottieComponent
 
 private let offsetThreshold: CGFloat = 10.0
 private let dismissOffsetThreshold: CGFloat = 70.0
@@ -290,17 +289,11 @@ final class ChatTextInputMediaRecordingButton: TGModernConversationInputMicButto
         }
     }
     
-    private var micLockValue: (UIView & TGModernConversationInputMicButtonLock)?
-    private var micLock: UIView & TGModernConversationInputMicButtonLock {
-        if let current = self.micLockValue {
-            return current
-        } else {
-            let lockView = LockView(frame: CGRect(origin: CGPoint(), size: CGSize(width: 40.0, height: 60.0)), theme: self.theme, strings: self.strings)
-            lockView.addTarget(self, action: #selector(handleStopTap), for: .touchUpInside)
-            self.micLockValue = lockView
-            return lockView
-        }
-    }
+    private lazy var micLock: (UIView & TGModernConversationInputMicButtonLock) = {
+        let lockView = LockView(frame: CGRect(origin: CGPoint(), size: CGSize(width: 40.0, height: 60.0)), theme: self.theme, strings: self.strings)
+        lockView.addTarget(self, action: #selector(handleStopTap), for: .touchUpInside)
+        return lockView
+    }()
     
     init(theme: PresentationTheme, strings: PresentationStrings, presentController: @escaping (ViewController) -> Void) {
         self.theme = theme
@@ -370,34 +363,37 @@ final class ChatTextInputMediaRecordingButton: TGModernConversationInputMicButto
                 animationName = "anim_micToVideo"
         }
         
-        //var animationMode: LottieAnimationComponent.AnimationItem.Mode = .still(position: .end)
+        var animationMode: LottieAnimationComponent.AnimationItem.Mode = .still(position: .end)
+        if previousMode != mode {
+            animationMode = .animating(loop: false)
+        }
     
-        /*let colorKeys = ["__allcolors__"]
+        let colorKeys = ["__allcolors__"]
         var colors: [String: UIColor] = [:]
         for colorKey in colorKeys {
             colors[colorKey] = self.theme.chat.inputPanel.panelControlColor.blitOver(self.theme.chat.inputPanel.inputBackgroundColor, alpha: 1.0)
-        }*/
+        }
         
         let _ = animationView.update(
             transition: .immediate,
-            component: AnyComponent(LottieComponent(
-                content: LottieComponent.AppBundleContent(name: animationName),
-                color: self.theme.chat.inputPanel.panelControlColor.blitOver(self.theme.chat.inputPanel.inputBackgroundColor, alpha: 1.0)
+            component: AnyComponent(LottieAnimationComponent(
+                animation: LottieAnimationComponent.AnimationItem(
+                    name: animationName,
+                    mode: animationMode
+                ),
+                colors: colors,
+                size: animationFrame.size
             )),
             environment: {},
             containerSize: animationFrame.size
         )
 
-        if let view = animationView.view as? LottieComponent.View {
+        if let view = animationView.view {
             view.isUserInteractionEnabled = false
             if view.superview == nil {
                 self.insertSubview(view, at: 0)
             }
             view.frame = animationFrame
-            
-            if previousMode != mode {
-                view.playOnce()
-            }
         }
     }
     
@@ -408,7 +404,7 @@ final class ChatTextInputMediaRecordingButton: TGModernConversationInputMicButto
         
         self.pallete = legacyInputMicPalette(from: theme)
         self.micDecorationValue?.setColor(self.theme.chat.inputPanel.actionControlFillColor)
-        (self.micLockValue as? LockView)?.updateTheme(theme)
+        (self.micLock as? LockView)?.updateTheme(theme)
     }
     
     deinit {

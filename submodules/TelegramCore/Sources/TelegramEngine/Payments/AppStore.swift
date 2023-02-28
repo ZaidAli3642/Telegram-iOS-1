@@ -12,7 +12,6 @@ public enum AssignAppStoreTransactionError {
 
 public enum AppStoreTransactionPurpose {
     case subscription
-    case upgrade
     case gift(peerId: EnginePeer.Id, currency: String, amount: Int64)
     case restore
 }
@@ -20,15 +19,10 @@ public enum AppStoreTransactionPurpose {
 func _internal_sendAppStoreReceipt(account: Account, receipt: Data, purpose: AppStoreTransactionPurpose) -> Signal<Never, AssignAppStoreTransactionError> {
     var purposeSignal: Signal<Api.InputStorePaymentPurpose, NoError>
     switch purpose {
-    case .subscription, .upgrade, .restore:
+    case .subscription, .restore:
         var flags: Int32 = 0
-        switch purpose {
-        case .upgrade:
-            flags |= (1 << 1)
-        case .restore:
+        if case .restore = purpose {
             flags |= (1 << 0)
-        default:
-            break
         }
         purposeSignal = .single(.inputStorePaymentPremiumSubscription(flags: flags))
     case let .gift(peerId, currency, amount):
@@ -67,15 +61,10 @@ public enum RestoreAppStoreReceiptError {
 func _internal_canPurchasePremium(account: Account, purpose: AppStoreTransactionPurpose) -> Signal<Bool, NoError> {
     var purposeSignal: Signal<Api.InputStorePaymentPurpose, NoError>
     switch purpose {
-    case .subscription, .restore, .upgrade:
+    case .subscription, .restore:
         var flags: Int32 = 0
-        switch purpose {
-        case .upgrade:
-            flags |= (1 << 1)
-        case .restore:
+        if case .restore = purpose {
             flags |= (1 << 0)
-        default:
-            break
         }
         purposeSignal = .single(.inputStorePaymentPremiumSubscription(flags: flags))
     case let .gift(peerId, currency, amount):

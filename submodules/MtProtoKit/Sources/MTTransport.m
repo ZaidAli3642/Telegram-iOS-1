@@ -92,7 +92,4 @@
 - (void)updateSchemes:(NSArray<MTTransportScheme *> * _Nonnull)schemes {
 }
 
-- (void)simulateDisconnection {
-}
-
 @end

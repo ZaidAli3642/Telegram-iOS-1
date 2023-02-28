@@ -272,10 +272,7 @@ public func parseInternalUrl(query: String) -> ParsedInternalUrl? {
                         return .join(String(component.dropFirst()))
                     }
                 } else if pathComponents[0].hasPrefix("$") || pathComponents[0].hasPrefix("%24") {
-                    var component = pathComponents[0].replacingOccurrences(of: "%24", with: "$")
-                    if component.hasPrefix("$") {
-                        component = String(component[component.index(after: component.startIndex)...])
-                    }
+                    let component = pathComponents[0].replacingOccurrences(of: "%24", with: "$")
                     return .invoice(component)
                 }
                 return .peer(.name(peerName), nil)
@@ -748,7 +745,7 @@ private func resolveInternalUrl(context: AccountContext, url: ParsedInternalUrl)
             }
             |> map { invoice -> ResolvedUrl? in
                 guard let invoice = invoice else {
-                    return .invoice(slug: slug, invoice: nil)
+                    return nil
                 }
                 return .invoice(slug: slug, invoice: invoice)
             }

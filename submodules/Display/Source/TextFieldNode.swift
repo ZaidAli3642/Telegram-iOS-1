@@ -8,15 +8,15 @@ public final class TextFieldNodeView: UITextField {
     var fixOffset: Bool = true
     
     override public func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.integral
+        return bounds.offsetBy(dx: 0.0, dy: 0.0).integral
     }
     
     override public func textRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.integral
+        return bounds.offsetBy(dx: 0.0, dy: 0.0).integral
     }
     
     override public func placeholderRect(forBounds bounds: CGRect) -> CGRect {
-        return self.editingRect(forBounds: bounds)
+        return self.editingRect(forBounds: bounds.offsetBy(dx: 0.0, dy: 0.0))
     }
     
     override public func deleteBackward() {

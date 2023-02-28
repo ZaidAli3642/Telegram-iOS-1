@@ -408,7 +408,7 @@ private final class TopicIconSelectionComponent: Component {
                     defaultToEmojiTab: true,
                     externalTopPanelContainer: self.panelHostView,
                     externalBottomPanelContainer: nil,
-                    displayTopPanelBackground: .blur,
+                    displayTopPanelBackground: true,
                     topPanelExtensionUpdated: { _, _ in },
                     hideInputUpdated: { _, _, _ in },
                     hideTopPanelUpdated: { _, _ in },
@@ -416,7 +416,6 @@ private final class TopicIconSelectionComponent: Component {
                     switchToGifSubject: { _ in },
                     reorderItems: { _, _ in },
                     makeSearchContainerNode: { _ in return nil },
-                    contentIdUpdated: { _ in },
                     deviceMetrics: component.deviceMetrics,
                     hiddenInputHeight: 0.0,
                     inputHeight: 0.0,
@@ -553,7 +552,6 @@ private final class ForumCreateTopicScreenComponent: CombinedComponent {
                     isStatusSelection: false,
                     isReactionSelection: false,
                     isEmojiSelection: false,
-                    hasTrending: false,
                     isTopicIconSelection: true,
                     topReactionItems: [],
                     areUnicodeEmojiEnabled: false,
@@ -622,7 +620,6 @@ private final class ForumCreateTopicScreenComponent: CombinedComponent {
                     isStatusSelection: false,
                     isReactionSelection: false,
                     isEmojiSelection: false,
-                    hasTrending: false,
                     isTopicIconSelection: true,
                     topReactionItems: [],
                     areUnicodeEmojiEnabled: false,
@@ -928,7 +925,7 @@ private final class ForumCreateTopicScreenComponent: CombinedComponent {
                         },
                         openSearch: {
                         },
-                        addGroupAction: { groupId, isPremiumLocked, _ in
+                        addGroupAction: { groupId, isPremiumLocked in
                             guard let collectionId = groupId.base as? ItemCollectionId else {
                                 return
                             }
@@ -965,11 +962,10 @@ private final class ForumCreateTopicScreenComponent: CombinedComponent {
                         },
                         requestUpdate: { _ in
                         },
-                        updateSearchQuery: { _ in
+                        updateSearchQuery: { _, _ in
                         },
                         updateScrollingToItemGroup: {
                         },
-                        onScroll: {},
                         chatPeerId: nil,
                         peekBehavior: nil,
                         customLayout: nil,

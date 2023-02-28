@@ -92,14 +92,10 @@ func _internal_exportAuthTransferToken(accountManager: AccountManager<TelegramAc
                     switch result {
                     case let .loginTokenSuccess(authorization):
                         switch authorization {
-                        case let .authorization(_, _, _, futureAuthToken, user):
-                            if let futureAuthToken = futureAuthToken {
-                                storeFutureLoginToken(accountManager: accountManager, token: futureAuthToken.makeData())
-                            }
-                            
+                        case let .authorization(_, _, _, user):
                             return updatedAccount.postbox.transaction { transaction -> Signal<ExportAuthTransferTokenResult, ExportAuthTransferTokenError> in
                                 let user = TelegramUser(user: user)
-                                let state = AuthorizedAccountState(isTestingEnvironment: updatedAccount.testingEnvironment, masterDatacenterId: updatedAccount.masterDatacenterId, peerId: user.id, state: nil, invalidatedChannels: [])
+                                let state = AuthorizedAccountState(isTestingEnvironment: updatedAccount.testingEnvironment, masterDatacenterId: updatedAccount.masterDatacenterId, peerId: user.id, state: nil)
                                 initializedAppSettingsAfterLogin(transaction: transaction, appVersion: updatedAccount.networkArguments.appVersion, syncContacts: syncContacts)
                                 transaction.setState(state)
                                 return accountManager.transaction { transaction -> ExportAuthTransferTokenResult in
@@ -120,14 +116,10 @@ func _internal_exportAuthTransferToken(accountManager: AccountManager<TelegramAc
             }
         case let .loginTokenSuccess(authorization):
             switch authorization {
-            case let .authorization(_, _, _, futureAuthToken, user):
-                if let futureAuthToken = futureAuthToken {
-                    storeFutureLoginToken(accountManager: accountManager, token: futureAuthToken.makeData())
-                }
-                
+            case let .authorization(_, _, _, user):
                 return account.postbox.transaction { transaction -> Signal<ExportAuthTransferTokenResult, ExportAuthTransferTokenError> in
                     let user = TelegramUser(user: user)
-                    let state = AuthorizedAccountState(isTestingEnvironment: account.testingEnvironment, masterDatacenterId: account.masterDatacenterId, peerId: user.id, state: nil, invalidatedChannels: [])
+                    let state = AuthorizedAccountState(isTestingEnvironment: account.testingEnvironment, masterDatacenterId: account.masterDatacenterId, peerId: user.id, state: nil)
                     initializedAppSettingsAfterLogin(transaction: transaction, appVersion: account.networkArguments.appVersion, syncContacts: syncContacts)
                     transaction.setState(state)
                     return accountManager.transaction { transaction -> ExportAuthTransferTokenResult in

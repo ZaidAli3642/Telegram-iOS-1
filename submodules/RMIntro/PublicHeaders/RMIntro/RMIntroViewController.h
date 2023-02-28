@@ -66,8 +66,6 @@
 - (UIView *)createAnimationSnapshot;
 - (UIView *)createTextSnapshot;
 
-- (void)animateIn;
-
 @property (nonatomic) bool isEnabled;
 
 - (void)startTimer;

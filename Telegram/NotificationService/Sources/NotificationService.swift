@@ -33,8 +33,6 @@ private let accountAuxiliaryMethods = AccountAuxiliaryMethods(fetchResource: { a
     return .single(nil)
 }, prepareSecretThumbnailData: { _ in
     return nil
-}, backgroundUpload: { _, _, _ in
-    return .single(nil)
 })
 
 private func rootPathForBasePath(_ appGroupPath: String) -> String {
@@ -462,7 +460,6 @@ private struct NotificationContent: CustomStringConvertible {
         string += " userInfo: \(String(describing: self.userInfo)),\n"
         string += " senderImage: \(self.senderImage != nil ? "non-empty" : "empty"),\n"
         string += " isLockedMessage: \(String(describing: self.isLockedMessage)),\n"
-        string += " attachments: \(self.attachments),\n"
         string += "}"
         return string
     }
@@ -1167,13 +1164,7 @@ private final class NotificationServiceHandler {
                                                 } else {
                                                     let intervals: Signal<[(Range<Int64>, MediaBoxFetchPriority)], NoError> = .single([(0 ..< Int64.max, MediaBoxFetchPriority.maximum)])
                                                     fetchMediaSignal = Signal { subscriber in
-                                                        final class DataValue {
-                                                            var data = Data()
-                                                            var totalSize: Int64?
-                                                        }
-                                                        
-                                                        let collectedData = Atomic<DataValue>(value: DataValue())
-                                                        
+                                                        let collectedData = Atomic<Data>(value: Data())
                                                         return standaloneMultipartFetch(
                                                             postbox: stateManager.postbox,
                                                             network: stateManager.network,
@@ -1200,32 +1191,10 @@ private final class NotificationServiceHandler {
                                                         ).start(next: { result in
                                                             switch result {
                                                             case let .dataPart(_, data, _, _):
-                                                                var isCompleted = false
                                                                 let _ = collectedData.modify { current in
-                                                                    let current = current
-                                                                    current.data.append(data)
-                                                                    if let totalSize = current.totalSize, Int64(current.data.count) >= totalSize {
-                                                                        isCompleted = true
-                                                                    }
+                                                                    var current = current
+                                                                    current.append(data)
                                                                     return current
-                                                                }
-                                                                if isCompleted {
-                                                                    subscriber.putNext(collectedData.with({ $0.data }))
-                                                                    subscriber.putCompletion()
-                                                                }
-                                                            case let .resourceSizeUpdated(size):
-                                                                var isCompleted = false
-                                                                let _ = collectedData.modify { current in
-                                                                    let current = current
-                                                                    current.totalSize = size
-                                                                    if Int64(current.data.count) >= size {
-                                                                        isCompleted = true
-                                                                    }
-                                                                    return current
-                                                                }
-                                                                if isCompleted {
-                                                                    subscriber.putNext(collectedData.with({ $0.data }))
-                                                                    subscriber.putCompletion()
                                                                 }
                                                             default:
                                                                 break
@@ -1234,7 +1203,7 @@ private final class NotificationServiceHandler {
                                                             subscriber.putNext(nil)
                                                             subscriber.putCompletion()
                                                         }, completed: {
-                                                            subscriber.putNext(collectedData.with({ $0.data }))
+                                                            subscriber.putNext(collectedData.with({ $0 }))
                                                             subscriber.putCompletion()
                                                         })
                                                     }
@@ -1334,15 +1303,10 @@ private final class NotificationServiceHandler {
                                                 }
 
                                                 Logger.shared.log("NotificationService \(episode)", "Unread count: \(value.0), isCurrentAccount: \(isCurrentAccount)")
-                                                
-                                                Logger.shared.log("NotificationService \(episode)", "mediaAttachment: \(String(describing: mediaAttachment)), mediaData: \(String(describing: mediaData?.count))")
 
                                                 if let image = mediaAttachment as? TelegramMediaImage, let resource = largestImageRepresentation(image.representations)?.resource {
                                                     if let mediaData = mediaData {
                                                         stateManager.postbox.mediaBox.storeResourceData(resource.id, data: mediaData, synchronous: true)
-                                                        if let messageId {
-                                                            let _ = addSynchronizeAutosaveItemOperation(postbox: stateManager.postbox, messageId: messageId, mediaId: image.imageId).start()
-                                                        }
                                                     }
                                                     if let storedPath = stateManager.postbox.mediaBox.completedResourcePath(resource, pathExtension: "jpg") {
                                                         if let attachment = try? UNNotificationAttachment(identifier: "image", url: URL(fileURLWithPath: storedPath), options: nil) {
@@ -1470,10 +1434,7 @@ private final class NotificationServiceHandler {
                                                         switch state {
                                                         case let .idBased(maxIncomingReadId, _, _, _, _):
                                                             if maxIncomingReadId >= messageId.id {
-                                                                Logger.shared.log("NotificationService \(episode)", "maxIncomingReadId: \(maxIncomingReadId), messageId: \(messageId.id), skipping")
                                                                 content = NotificationContent(isLockedMessage: nil)
-                                                            } else {
-                                                                Logger.shared.log("NotificationService \(episode)", "maxIncomingReadId: \(maxIncomingReadId), messageId: \(messageId.id), not skipping")
                                                             }
                                                         case .indexBased:
                                                             break

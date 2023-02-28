@@ -555,13 +555,7 @@ public final class DrawingView: UIView, UIGestureRecognizerDelegate, UIPencilInt
                         self.currentDrawingViewContainer.mask = nil
                         self.currentDrawingViewContainer.image = nil
                     } else {
-                        if let renderView = currentDrawingRenderView as? PenTool.RenderView, renderView.isDryingUp {
-                            renderView.onDryingUp = { [weak renderView] in
-                                renderView?.removeFromSuperview()
-                            }
-                        } else {
-                            currentDrawingRenderView.removeFromSuperview()
-                        }
+                        currentDrawingRenderView.removeFromSuperview()
                     }
                     self.currentDrawingRenderView = nil
                 }
@@ -657,14 +651,10 @@ public final class DrawingView: UIView, UIGestureRecognizerDelegate, UIPencilInt
             
             self.updateInternalState()
         }
-        if let uncommitedElement = self.uncommitedElement as? PenTool {
-            if uncommitedElement.hasArrow {
-                uncommitedElement.finishArrow {
-                    complete(true)
-                }
-            } else {
+        if let uncommitedElement = self.uncommitedElement as? PenTool, uncommitedElement.hasArrow {
+            uncommitedElement.finishArrow({
                 complete(true)
-            }
+            })
         } else {
             complete(synchronous)
         }

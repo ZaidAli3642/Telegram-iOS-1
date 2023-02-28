@@ -67,7 +67,7 @@
             break;
         case STPCardFieldTypeExpiration: {
             STPCardValidationState monthState = [STPCardValidator validationStateForExpirationMonth:self.expirationMonth];
-            STPCardValidationState yearState = [STPCardValidator validationStateForExpirationYear:self.expirationYear inMonth:self.expirationMonth cardBrand:[STPCardValidator brandForNumber:self.cardNumber]];
+            STPCardValidationState yearState = [STPCardValidator validationStateForExpirationYear:self.expirationYear inMonth:self.expirationMonth];
             if (monthState == STPCardValidationStateValid && yearState == STPCardValidationStateValid) {
                 return STPCardValidationStateValid;
             } else if (monthState == STPCardValidationStateInvalid || yearState == STPCardValidationStateInvalid) {

@@ -118,8 +118,6 @@ final class CommandMenuChatInputPanelItemNode: ListViewItemNode {
     private let backgroundNode: ASDisplayNode
     private let highlightedBackgroundNode: ASDisplayNode
         
-    private let activateAreaNode: AccessibilityAreaNode
-    
     init() {
         self.textNode = TextNode()
         self.commandNode = TextNode()
@@ -141,9 +139,6 @@ final class CommandMenuChatInputPanelItemNode: ListViewItemNode {
         self.backgroundNode = ASDisplayNode()
         self.backgroundNode.clipsToBounds = true
         
-        self.activateAreaNode = AccessibilityAreaNode()
-        self.activateAreaNode.accessibilityTraits = [.button]
-        
         super.init(layerBacked: false, dynamicBounce: false)
                 
         self.addSubnode(self.clippingNode)
@@ -153,8 +148,6 @@ final class CommandMenuChatInputPanelItemNode: ListViewItemNode {
         self.backgroundNode.addSubnode(self.textNode)
         self.backgroundNode.addSubnode(self.commandNode)
         self.backgroundNode.addSubnode(self.separatorNode)
-        
-        self.addSubnode(self.activateAreaNode)
     }
     
     override func didLoad() {
@@ -233,10 +226,6 @@ final class CommandMenuChatInputPanelItemNode: ListViewItemNode {
                     strongSelf.separatorNode.frame = CGRect(origin: CGPoint(x: leftInset, y: nodeLayout.contentSize.height - UIScreenPixel), size: CGSize(width: params.width - leftInset, height: UIScreenPixel))
                     
                     strongSelf.highlightedBackgroundNode.frame = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: CGSize(width: params.width, height: nodeLayout.size.height + UIScreenPixel))
-                    
-                    strongSelf.activateAreaNode.accessibilityLabel = textString.string
-                    strongSelf.activateAreaNode.accessibilityValue = commandString.string
-                    strongSelf.activateAreaNode.frame = CGRect(origin: .zero, size: nodeLayout.size)
                     
                     if !mergedTop {
                         strongSelf.shadowNode.isHidden = false

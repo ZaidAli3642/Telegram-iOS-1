@@ -5,16 +5,14 @@ import SwiftSignalKit
 
 public struct TranslationSettings: Codable, Equatable {
     public var showTranslate: Bool
-    public var translateChats: Bool
     public var ignoredLanguages: [String]?
     
     public static var defaultSettings: TranslationSettings {
-        return TranslationSettings(showTranslate: false, translateChats: true, ignoredLanguages: nil)
+        return TranslationSettings(showTranslate: false, ignoredLanguages: nil)
     }
     
-    init(showTranslate: Bool, translateChats: Bool, ignoredLanguages: [String]?) {
+    init(showTranslate: Bool, ignoredLanguages: [String]?) {
         self.showTranslate = showTranslate
-        self.translateChats = translateChats
         self.ignoredLanguages = ignoredLanguages
     }
     
@@ -22,7 +20,6 @@ public struct TranslationSettings: Codable, Equatable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
 
         self.showTranslate = try container.decodeIfPresent(Bool.self, forKey: "showTranslate") ?? false
-        self.translateChats = try container.decodeIfPresent(Bool.self, forKey: "translateChats") ?? true
         self.ignoredLanguages = try container.decodeIfPresent([String].self, forKey: "ignoredLanguages")
     }
     
@@ -30,24 +27,19 @@ public struct TranslationSettings: Codable, Equatable {
         var container = encoder.container(keyedBy: StringCodingKey.self)
 
         try container.encode(self.showTranslate, forKey: "showTranslate")
-        try container.encode(self.translateChats, forKey: "translateChats")
         try container.encodeIfPresent(self.ignoredLanguages, forKey: "ignoredLanguages")
     }
     
     public static func ==(lhs: TranslationSettings, rhs: TranslationSettings) -> Bool {
-        return lhs.showTranslate == rhs.showTranslate && lhs.translateChats == rhs.translateChats && lhs.ignoredLanguages == rhs.ignoredLanguages
+        return lhs.showTranslate == rhs.showTranslate && lhs.ignoredLanguages == rhs.ignoredLanguages
     }
     
     public func withUpdatedShowTranslate(_ showTranslate: Bool) -> TranslationSettings {
-        return TranslationSettings(showTranslate: showTranslate, translateChats: self.translateChats, ignoredLanguages: self.ignoredLanguages)
-    }
-    
-    public func withUpdatedTranslateChats(_ translateChats: Bool) -> TranslationSettings {
-        return TranslationSettings(showTranslate: self.showTranslate, translateChats: translateChats, ignoredLanguages: self.ignoredLanguages)
+        return TranslationSettings(showTranslate: showTranslate, ignoredLanguages: self.ignoredLanguages)
     }
     
     public func withUpdatedIgnoredLanguages(_ ignoredLanguages: [String]?) -> TranslationSettings {
-        return TranslationSettings(showTranslate: self.showTranslate, translateChats: self.translateChats, ignoredLanguages: ignoredLanguages)
+        return TranslationSettings(showTranslate: self.showTranslate, ignoredLanguages: ignoredLanguages)
     }
 }
 

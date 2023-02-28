@@ -18,19 +18,6 @@ import AvatarNode
 
 private let avatarFont = avatarPlaceholderFont(size: 15.0)
 
-func cancelContextGestures(view: UIView) {
-    if let gestureRecognizers = view.gestureRecognizers {
-        for gesture in gestureRecognizers {
-            if let gesture = gesture as? ContextGesture {
-                gesture.cancel()
-            }
-        }
-    }
-    for subview in view.subviews {
-        cancelContextGestures(view: subview)
-    }
-}
-
 private final class PeerListItemComponent: Component {
     enum SelectionState: Equatable {
         case none
@@ -46,7 +33,6 @@ private final class PeerListItemComponent: Component {
     let selectionState: SelectionState
     let hasNext: Bool
     let action: (EnginePeer) -> Void
-    let contextAction: (EnginePeer, ContextExtractedContentContainingView, ContextGesture) -> Void
     
     init(
         context: AccountContext,
@@ -57,8 +43,7 @@ private final class PeerListItemComponent: Component {
         label: String,
         selectionState: SelectionState,
         hasNext: Bool,
-        action: @escaping (EnginePeer) -> Void,
-        contextAction: @escaping (EnginePeer, ContextExtractedContentContainingView, ContextGesture) -> Void
+        action: @escaping (EnginePeer) -> Void
     ) {
         self.context = context
         self.theme = theme
@@ -69,7 +54,6 @@ private final class PeerListItemComponent: Component {
         self.selectionState = selectionState
         self.hasNext = hasNext
         self.action = action
-        self.contextAction = contextAction
     }
     
     static func ==(lhs: PeerListItemComponent, rhs: PeerListItemComponent) -> Bool {
@@ -100,10 +84,7 @@ private final class PeerListItemComponent: Component {
         return true
     }
     
-    final class View: ContextControllerSourceView {
-        private let extractedContainerView: ContextExtractedContentContainingView
-        private let containerButton: HighlightTrackingButton
-        
+    final class View: HighlightTrackingButton {
         private let title = ComponentView<Empty>()
         private let label = ComponentView<Empty>()
         private let separatorLayer: SimpleLayer
@@ -111,58 +92,22 @@ private final class PeerListItemComponent: Component {
         
         private var checkLayer: CheckLayer?
         
-        private var isExtractedToContextMenu: Bool = false
-        
         private var highlightBackgroundFrame: CGRect?
         private var highlightBackgroundLayer: SimpleLayer?
         
         private var component: PeerListItemComponent?
-        private weak var state: EmptyComponentState?
         
         override init(frame: CGRect) {
             self.separatorLayer = SimpleLayer()
-            
-            self.extractedContainerView = ContextExtractedContentContainingView()
-            self.containerButton = HighlightTrackingButton()
-            
             self.avatarNode = AvatarNode(font: avatarFont)
             self.avatarNode.isLayerBacked = true
             
             super.init(frame: frame)
             
             self.layer.addSublayer(self.separatorLayer)
+            self.layer.addSublayer(self.avatarNode.layer)
             
-            self.addSubview(self.extractedContainerView)
-            self.targetViewForActivationProgress = self.extractedContainerView.contentView
-            
-            self.extractedContainerView.contentView.addSubview(self.containerButton)
-            
-            self.containerButton.layer.addSublayer(self.avatarNode.layer)
-            
-            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self] value in
-                guard let self, let component = self.component else {
-                    return
-                }
-                self.containerButton.clipsToBounds = value
-                self.containerButton.backgroundColor = value ? component.theme.list.plainBackgroundColor : nil
-                self.containerButton.layer.cornerRadius = value ? 10.0 : 0.0
-            }
-            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self] value, transition in
-                guard let self else {
-                    return
-                }
-                self.isExtractedToContextMenu = value
-                
-                let mappedTransition: Transition
-                if value {
-                    mappedTransition = Transition(transition)
-                } else {
-                    mappedTransition = Transition(animation: .curve(duration: 0.2, curve: .easeInOut))
-                }
-                self.state?.updated(transition: mappedTransition)
-            }
-            
-            self.containerButton.highligthedChanged = { [weak self] isHighlighted in
+            self.highligthedChanged = { [weak self] isHighlighted in
                 guard let self, let component = self.component, let highlightBackgroundFrame = self.highlightBackgroundFrame else {
                     return
                 }
@@ -190,15 +135,7 @@ private final class PeerListItemComponent: Component {
                     }
                 }
             }
-            self.containerButton.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-            
-            self.activated = { [weak self] gesture, _ in
-                guard let self, let component = self.component, let peer = component.peer else {
-                    gesture.cancel()
-                    return
-                }
-                component.contextAction(peer, self.extractedContainerView, gesture)
-            }
+            self.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
         }
         
         required init?(coder: NSCoder) {
@@ -232,12 +169,8 @@ private final class PeerListItemComponent: Component {
             }
             
             self.component = component
-            self.state = state
-            
-            let contextInset: CGFloat = self.isExtractedToContextMenu ? 12.0 : 0.0
             
             let height: CGFloat = 52.0
-            let verticalInset: CGFloat = 1.0
             var leftInset: CGFloat = 62.0 + component.sideInset
             var avatarLeftInset: CGFloat = component.sideInset + 10.0
             
@@ -257,12 +190,12 @@ private final class PeerListItemComponent: Component {
                 } else {
                     checkLayer = CheckLayer(theme: CheckNodeTheme(theme: component.theme, style: .plain))
                     self.checkLayer = checkLayer
-                    self.containerButton.layer.addSublayer(checkLayer)
-                    checkLayer.frame = CGRect(origin: CGPoint(x: -checkSize, y: floor((height - verticalInset * 2.0 - checkSize) / 2.0)), size: CGSize(width: checkSize, height: checkSize))
+                    self.layer.addSublayer(checkLayer)
+                    checkLayer.frame = CGRect(origin: CGPoint(x: -checkSize, y: floor((height - checkSize) / 2.0)), size: CGSize(width: checkSize, height: checkSize))
                     checkLayer.setSelected(isSelected, animated: false)
                     checkLayer.setNeedsDisplay()
                 }
-                transition.setFrame(layer: checkLayer, frame: CGRect(origin: CGPoint(x: component.sideInset + 20.0, y: floor((height - verticalInset * 2.0 - checkSize) / 2.0)), size: CGSize(width: checkSize, height: checkSize)))
+                transition.setFrame(layer: checkLayer, frame: CGRect(origin: CGPoint(x: component.sideInset + 20.0, y: floor((height - checkSize) / 2.0)), size: CGSize(width: checkSize, height: checkSize)))
             } else {
                 if let checkLayer = self.checkLayer {
                     self.checkLayer = nil
@@ -272,11 +205,11 @@ private final class PeerListItemComponent: Component {
                 }
             }
             
-            let rightInset: CGFloat = contextInset * 2.0 + 16.0 + component.sideInset
+            let rightInset: CGFloat = 16.0 + component.sideInset
             
             let avatarSize: CGFloat = 40.0
             
-            let avatarFrame = CGRect(origin: CGPoint(x: avatarLeftInset, y: floor((height - verticalInset * 2.0 - avatarSize) / 2.0)), size: CGSize(width: avatarSize, height: avatarSize))
+            let avatarFrame = CGRect(origin: CGPoint(x: avatarLeftInset, y: floor((height - avatarSize) / 2.0)), size: CGSize(width: avatarSize, height: avatarSize))
             if self.avatarNode.bounds.isEmpty {
                 self.avatarNode.frame = avatarFrame
             } else {
@@ -289,11 +222,7 @@ private final class PeerListItemComponent: Component {
                 } else {
                     clipStyle = .round
                 }
-                if peer.id == component.context.account.peerId {
-                    self.avatarNode.setPeer(context: component.context, theme: component.theme, peer: peer, overrideImage: .savedMessagesIcon, clipStyle: clipStyle, displayDimensions: CGSize(width: avatarSize, height: avatarSize))
-                } else {
-                    self.avatarNode.setPeer(context: component.context, theme: component.theme, peer: peer, clipStyle: clipStyle, displayDimensions: CGSize(width: avatarSize, height: avatarSize))
-                }
+                self.avatarNode.setPeer(context: component.context, theme: component.theme, peer: peer, clipStyle: clipStyle, displayDimensions: CGSize(width: avatarSize, height: avatarSize))
             }
             
             let labelSize = self.label.update(
@@ -307,7 +236,7 @@ private final class PeerListItemComponent: Component {
             
             let previousTitleFrame = self.title.view?.frame
             var previousTitleContents: UIView?
-            if hasSelectionUpdated && !"".isEmpty {
+            if hasSelectionUpdated {
                 previousTitleContents = self.title.view?.snapshotView(afterScreenUpdates: false)
             }
             
@@ -319,11 +248,11 @@ private final class PeerListItemComponent: Component {
                 environment: {},
                 containerSize: CGSize(width: availableSize.width - leftInset - rightInset - labelSize.width - 4.0, height: 100.0)
             )
-            let titleFrame = CGRect(origin: CGPoint(x: leftInset, y: floor((height - verticalInset * 2.0 - titleSize.height) / 2.0)), size: titleSize)
+            let titleFrame = CGRect(origin: CGPoint(x: leftInset, y: floor((height - titleSize.height) / 2.0)), size: titleSize)
             if let titleView = self.title.view {
                 if titleView.superview == nil {
                     titleView.isUserInteractionEnabled = false
-                    self.containerButton.addSubview(titleView)
+                    self.addSubview(titleView)
                 }
                 titleView.frame = titleFrame
                 if let previousTitleFrame, previousTitleFrame.origin.x != titleFrame.origin.x {
@@ -344,9 +273,9 @@ private final class PeerListItemComponent: Component {
             if let labelView = self.label.view {
                 if labelView.superview == nil {
                     labelView.isUserInteractionEnabled = false
-                    self.containerButton.addSubview(labelView)
+                    self.addSubview(labelView)
                 }
-                transition.setFrame(view: labelView, frame: CGRect(origin: CGPoint(x: availableSize.width - rightInset - labelSize.width, y: floor((height - verticalInset * 2.0 - labelSize.height) / 2.0)), size: labelSize))
+                transition.setFrame(view: labelView, frame: CGRect(origin: CGPoint(x: availableSize.width - rightInset - labelSize.width, y: floor((height - labelSize.height) / 2.0)), size: labelSize))
             }
             
             if themeUpdated {
@@ -356,14 +285,6 @@ private final class PeerListItemComponent: Component {
             self.separatorLayer.isHidden = !component.hasNext
             
             self.highlightBackgroundFrame = CGRect(origin: CGPoint(), size: CGSize(width: availableSize.width, height: height + ((component.hasNext) ? UIScreenPixel : 0.0)))
-            
-            let resultBounds = CGRect(origin: CGPoint(), size: CGSize(width: availableSize.width, height: height))
-            transition.setFrame(view: self.extractedContainerView, frame: resultBounds)
-            transition.setFrame(view: self.extractedContainerView.contentView, frame: resultBounds)
-            self.extractedContainerView.contentRect = resultBounds
-            
-            let containerFrame = CGRect(origin: CGPoint(x: contextInset, y: verticalInset), size: CGSize(width: availableSize.width - contextInset * 2.0, height: height - verticalInset * 2.0))
-            transition.setFrame(view: self.containerButton, frame: containerFrame)
             
             return CGSize(width: availableSize.width, height: height)
         }
@@ -423,20 +344,17 @@ final class StoragePeerListPanelComponent: Component {
     let items: Items?
     let selectionState: StorageUsageScreenComponent.SelectionState?
     let peerAction: (EnginePeer) -> Void
-    let contextAction: (EnginePeer, ContextExtractedContentContainingView, ContextGesture) -> Void
 
     init(
         context: AccountContext,
         items: Items?,
         selectionState: StorageUsageScreenComponent.SelectionState?,
-        peerAction: @escaping (EnginePeer) -> Void,
-        contextAction: @escaping (EnginePeer, ContextExtractedContentContainingView, ContextGesture) -> Void
+        peerAction: @escaping (EnginePeer) -> Void
     ) {
         self.context = context
         self.items = items
         self.selectionState = selectionState
         self.peerAction = peerAction
-        self.contextAction = contextAction
     }
     
     static func ==(lhs: StoragePeerListPanelComponent, rhs: StoragePeerListPanelComponent) -> Bool {
@@ -495,14 +413,8 @@ final class StoragePeerListPanelComponent: Component {
         }
     }
     
-    private final class ScrollViewImpl: UIScrollView {
-        override func touchesShouldCancel(in view: UIView) -> Bool {
-            return true
-        }
-    }
-    
     class View: UIView, UIScrollViewDelegate {
-        private let scrollView: ScrollViewImpl
+        private let scrollView: UIScrollView
         
         private let measureItem = ComponentView<Empty>()
         private var visibleItems: [EnginePeer.Id: ComponentView<Empty>] = [:]
@@ -514,7 +426,7 @@ final class StoragePeerListPanelComponent: Component {
         private var itemLayout: ItemLayout?
         
         override init(frame: CGRect) {
-            self.scrollView = ScrollViewImpl()
+            self.scrollView = UIScrollView()
             
             super.init(frame: frame)
             
@@ -544,10 +456,6 @@ final class StoragePeerListPanelComponent: Component {
             if !self.ignoreScrolling {
                 self.updateScrolling(transition: .immediate)
             }
-        }
-        
-        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-            cancelContextGestures(view: scrollView)
         }
         
         private func updateScrolling(transition: Transition) {
@@ -586,26 +494,18 @@ final class StoragePeerListPanelComponent: Component {
                         itemSelectionState = .none
                     }
                     
-                    let itemTitle: String
-                    if item.peer.id == component.context.account.peerId {
-                        itemTitle = environment.strings.DialogList_SavedMessages
-                    } else {
-                        itemTitle = item.peer.displayTitle(strings: environment.strings, displayOrder: .firstLast)
-                    }
-                    
                     let _ = itemView.update(
                         transition: itemTransition,
                         component: AnyComponent(PeerListItemComponent(
                             context: component.context,
                             theme: environment.theme,
                             sideInset: environment.containerInsets.left,
-                            title: itemTitle,
+                            title: item.peer.displayTitle(strings: environment.strings, displayOrder: .firstLast),
                             peer: item.peer,
                             label: dataSizeString(item.size, formatting: dataSizeFormatting),
                             selectionState: itemSelectionState,
                             hasNext: index != items.items.count - 1,
-                            action: component.peerAction,
-                            contextAction: component.contextAction
+                            action: component.peerAction
                         )),
                         environment: {},
                         containerSize: CGSize(width: itemLayout.containerWidth, height: itemLayout.itemHeight)
@@ -654,8 +554,6 @@ final class StoragePeerListPanelComponent: Component {
                     selectionState: .none,
                     hasNext: false,
                     action: { _ in
-                    },
-                    contextAction: { _, _, _ in
                     }
                 )),
                 environment: {},

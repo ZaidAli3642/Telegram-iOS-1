@@ -262,7 +262,7 @@ final class PeerInfoListPaneNode: ASDisplayNode, PeerInfoPaneNode {
                         strongSelf.context.sharedContext.mediaManager.setPlaylist(nil, type: type, control: SharedMediaPlayerControlAction.playback(.pause))
                     }
                 }
-                mediaAccessoryPanel.setRate = { [weak self] rate, fromMenu in
+                mediaAccessoryPanel.setRate = { [weak self] rate in
                     guard let strongSelf = self else {
                         return
                     }
@@ -291,28 +291,21 @@ final class PeerInfoListPaneNode: ASDisplayNode, PeerInfoPaneNode {
                             })
                             
                             let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
-                            let text: String?
-                            let rate: CGFloat?
+                            let slowdown: Bool?
                             if baseRate == .x1 {
-                                text = presentationData.strings.Conversation_AudioRateTooltipNormal
-                                rate = 1.0
-                            } else if baseRate == .x1_5 {
-                                text = presentationData.strings.Conversation_AudioRateTooltip15X
-                                rate = 1.5
+                                slowdown = true
                             } else if baseRate == .x2 {
-                                text = presentationData.strings.Conversation_AudioRateTooltipSpeedUp
-                                rate = 2.0
+                                slowdown = false
                             } else {
-                                text = nil
-                                rate = nil
+                                slowdown = nil
                             }
-                            if let rate, let text, !fromMenu {
+                            if let slowdown = slowdown {
                                 controller.present(
                                     UndoOverlayController(
                                         presentationData: presentationData,
                                         content: .audioRate(
-                                            rate: rate,
-                                            text: text
+                                            slowdown: slowdown,
+                                            text: slowdown ? presentationData.strings.Conversation_AudioRateTooltipNormal : presentationData.strings.Conversation_AudioRateTooltipSpeedUp
                                         ),
                                         elevatedLayout: false,
                                         animateInAsReplacement: hasTooltip,

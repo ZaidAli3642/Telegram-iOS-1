@@ -160,9 +160,7 @@ final class MediaPickerGridItemNode: GridItemNode {
             let checkNode = InteractiveCheckNode(theme: CheckNodeTheme(theme: theme, style: .overlay))
             checkNode.valueChanged = { [weak self] value in
                 if let strongSelf = self, let interaction = strongSelf.interaction, let selectableItem = strongSelf.selectableItem {
-                    if !interaction.toggleSelection(selectableItem, value, false) {
-                        strongSelf.checkNode?.setSelected(false, animated: false)
-                    }
+                    interaction.toggleSelection(selectableItem, value, false)
                 }
             }
             self.addSubnode(checkNode)

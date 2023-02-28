@@ -32,7 +32,6 @@ class ChatMessageReplyInfoNode: ASDisplayNode {
         let constrainedSize: CGSize
         let animationCache: AnimationCache?
         let animationRenderer: MultiAnimationRenderer?
-        let associatedData: ChatMessageItemAssociatedData
         
         init(
             presentationData: ChatPresentationData,
@@ -43,8 +42,7 @@ class ChatMessageReplyInfoNode: ASDisplayNode {
             parentMessage: Message,
             constrainedSize: CGSize,
             animationCache: AnimationCache?,
-            animationRenderer: MultiAnimationRenderer?,
-            associatedData: ChatMessageItemAssociatedData
+            animationRenderer: MultiAnimationRenderer?
         ) {
             self.presentationData = presentationData
             self.strings = strings
@@ -55,7 +53,6 @@ class ChatMessageReplyInfoNode: ASDisplayNode {
             self.constrainedSize = constrainedSize
             self.animationCache = animationCache
             self.animationRenderer = animationRenderer
-            self.associatedData = associatedData
         }
     }
     
@@ -168,20 +165,7 @@ class ChatMessageReplyInfoNode: ASDisplayNode {
             
             let messageText: NSAttributedString
             if isText {
-                var text = arguments.message.text
-                var messageEntities = arguments.message.textEntitiesAttribute?.entities ?? []
-                
-                if let translateToLanguage = arguments.associatedData.translateToLanguage, !text.isEmpty {
-                    for attribute in arguments.message.attributes {
-                        if let attribute = attribute as? TranslationMessageAttribute, !attribute.text.isEmpty, attribute.toLang == translateToLanguage {
-                            text = attribute.text
-                            messageEntities = attribute.entities
-                            break
-                        }
-                    }
-                }
-                    
-                let entities = messageEntities.filter { entity in
+                let entities = (arguments.message.textEntitiesAttribute?.entities ?? []).filter { entity in
                     if case .Spoiler = entity.type {
                         return true
                     } else if case .CustomEmoji = entity.type {
@@ -191,9 +175,9 @@ class ChatMessageReplyInfoNode: ASDisplayNode {
                     }
                 }
                 if entities.count > 0 {
-                    messageText = stringWithAppliedEntities(trimToLineCount(text, lineCount: 1), entities: entities, baseColor: textColor, linkColor: textColor, baseFont: textFont, linkFont: textFont, boldFont: textFont, italicFont: textFont, boldItalicFont: textFont, fixedFont: textFont, blockQuoteFont: textFont, underlineLinks: false, message: arguments.message)
+                    messageText = stringWithAppliedEntities(trimToLineCount(arguments.message.text, lineCount: 1), entities: entities, baseColor: textColor, linkColor: textColor, baseFont: textFont, linkFont: textFont, boldFont: textFont, italicFont: textFont, boldItalicFont: textFont, fixedFont: textFont, blockQuoteFont: textFont, underlineLinks: false, message: arguments.message)
                 } else {
-                    messageText = NSAttributedString(string: text, font: textFont, textColor: textColor)
+                    messageText = NSAttributedString(string: textString.string, font: textFont, textColor: textColor)
                 }
             } else {
                 messageText = NSAttributedString(string: textString.string, font: textFont, textColor: textColor)

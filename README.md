@@ -24,13 +24,11 @@ git clone --recursive -j8 https://github.com/TelegramMessenger/Telegram-iOS.git
 
 ```
 mkdir -p $HOME/telegram-configuration
-mkdir -p $HOME/telegram-provisioning
-cp build-system/appstore-configuration.json $HOME/telegram-configuration/configuration.json
-cp -R build-system/fake-codesigning $HOME/telegram-provisioning/ 
+cp -R build-system/example-configuration/* $HOME/telegram-configuration/
 ```
 
-- Modify the values in `configuration.json`
-- Replace the provisioning profiles in `profiles` with valid files
+- Modify the values in `variables.bzl`
+- Replace the provisioning profiles in `provisioning` with valid files
 
 4. (Optional) Create a build cache directory to speed up rebuilds
 
@@ -44,8 +42,7 @@ mkdir -p "$HOME/telegram-bazel-cache"
 python3 build-system/Make/Make.py \
     --cacheDir="$HOME/telegram-bazel-cache" \
     build \
-    --configurationPath=path-to-configuration.json \
-    --codesigningInformationPath=path-to-provisioning-data \
+    --configurationPath="$HOME/telegram-configuration" \
     --buildNumber=100001 \
     --configuration=release_universal
 ```
@@ -56,8 +53,7 @@ python3 build-system/Make/Make.py \
 python3 build-system/Make/Make.py \
     --cacheDir="$HOME/telegram-bazel-cache" \
     generateProject \
-    --configurationPath=path-to-configuration.json \
-    --codesigningInformationPath=path-to-provisioning-data \
+    --configurationPath="$HOME/telegram-configuration" \
     --disableExtensions
 ```
 
@@ -66,8 +62,7 @@ It is possible to generate a project that does not require any codesigning certi
 python3 build-system/Make/Make.py \
     --cacheDir="$HOME/telegram-bazel-cache" \
     generateProject \
-    --configurationPath=path-to-configuration.json \
-    --codesigningInformationPath=path-to-provisioning-data \
+    --configurationPath="$HOME/telegram-configuration" \
     --disableExtensions \
     --disableProvisioningProfiles
 ```

@@ -595,10 +595,6 @@
             hasOnScreenNavigation = (self.viewLoaded && self.view.safeAreaInsets.bottom > FLT_EPSILON) || _context.safeAreaInset.bottom > FLT_EPSILON;
         }
     }
-    
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && _intent == TGMediaAssetsControllerSendFileIntent) {
-        hasOnScreenNavigation = false;
-    }
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -1475,8 +1471,6 @@
             }
         }
         
-        bool spoiler = [editingContext spoilerForItem:asset];
-        
         if ([asset isKindOfClass:[UIImage class]]) {
             if (intent == TGMediaAssetsControllerSendFileIntent)
             {
@@ -1514,10 +1508,6 @@
                     
                     if (groupedId != nil && !hasAnyTimers)
                         dict[@"groupedId"] = groupedId;
-                    
-                    if (spoiler) {
-                        dict[@"spoiler"] = @true;
-                    }
                     
                     id generatedItem = descriptionGenerator(dict, caption, nil, nil);
                     return generatedItem;
@@ -1565,10 +1555,6 @@
                     
                     if (groupedId != nil && !hasAnyTimers)
                         dict[@"groupedId"] = groupedId;
-                    
-                    if (spoiler) {
-                        dict[@"spoiler"] = @true;
-                    }
                     
                     id generatedItem = descriptionGenerator(dict, caption, nil, nil);
                     return generatedItem;
@@ -1645,10 +1631,6 @@
                         dict[@"timer"] = timer;
                     else if (groupedId != nil && !hasAnyTimers)
                         dict[@"groupedId"] = groupedId;
-                    
-                    if (spoiler) {
-                        dict[@"spoiler"] = @true;
-                    }
                     
                     id generatedItem = descriptionGenerator(dict, caption, nil, nil);
                     return generatedItem;

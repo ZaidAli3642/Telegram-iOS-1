@@ -29,7 +29,7 @@ private func generateKnobImage() -> UIImage? {
     return image?.stretchableImage(withLeftCapWidth: Int(margin + side * 0.5), topCapHeight: Int(margin + side * 0.5))
 }
 
-final class ModeAndSizeComponent: Component {
+class ModeAndSizeComponent: Component {
     let values: [String]
     let sizeValue: CGFloat
     let isEditing: Bool

@@ -190,10 +190,7 @@
             controller.presentationStyle = TGNavigationControllerPresentationStyleInFormSheet;
             controller.modalPresentationStyle = UIModalPresentationFormSheet;
             
-            id<LegacyComponentsOverlayWindowManager> windowManager = nil;
-            windowManager = [context makeOverlayWindowManager];
-            
-            TGOverlayFormsheetWindow *formSheetWindow = [[TGOverlayFormsheetWindow alloc] initWithManager:windowManager parentController:strongParentController contentController:controller];
+            TGOverlayFormsheetWindow *formSheetWindow = [[TGOverlayFormsheetWindow alloc] initWithContext:context parentController:strongParentController contentController:controller];
             [formSheetWindow showAnimated:true];
             
             __weak TGNavigationController *weakNavController = controller;

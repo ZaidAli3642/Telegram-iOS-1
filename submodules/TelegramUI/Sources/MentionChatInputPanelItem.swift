@@ -108,8 +108,6 @@ final class MentionChatInputPanelItemNode: ListViewItemNode {
     private var recognizer: ItemListRevealOptionsGestureRecognizer?
     private var hapticFeedback: HapticFeedback?
     
-    private let activateAreaNode: AccessibilityAreaNode
-    
     private var item: MentionChatInputPanelItem?
     
     private var validLayout: (CGSize, CGFloat, CGFloat)?
@@ -127,9 +125,6 @@ final class MentionChatInputPanelItemNode: ListViewItemNode {
         self.highlightedBackgroundNode = ASDisplayNode()
         self.highlightedBackgroundNode.isLayerBacked = true
         
-        self.activateAreaNode = AccessibilityAreaNode()
-        self.activateAreaNode.accessibilityTraits = [.button]
-        
         super.init(layerBacked: false, dynamicBounce: false)
         
         self.addSubnode(self.topSeparatorNode)
@@ -137,8 +132,6 @@ final class MentionChatInputPanelItemNode: ListViewItemNode {
         
         self.addSubnode(self.avatarNode)
         self.addSubnode(self.textNode)
-        
-        self.addSubnode(self.activateAreaNode)
     }
     
     override func didLoad() {
@@ -178,14 +171,10 @@ final class MentionChatInputPanelItemNode: ListViewItemNode {
                 updatedInverted = item.inverted
             }
             
-            
-            let title = EnginePeer(item.peer).displayTitle(strings: item.presentationData.strings, displayOrder: item.presentationData.nameDisplayOrder)
-            var username: String?
             let string = NSMutableAttributedString()
-            string.append(NSAttributedString(string: title, font: primaryFont, textColor: item.presentationData.theme.list.itemPrimaryTextColor))
+            string.append(NSAttributedString(string: item.peer.debugDisplayTitle, font: primaryFont, textColor: item.presentationData.theme.list.itemPrimaryTextColor))
             if let addressName = item.peer.addressName, !addressName.isEmpty {
                 string.append(NSAttributedString(string: " @\(addressName)", font: secondaryFont, textColor: item.presentationData.theme.list.itemSecondaryTextColor))
-                username = "@\(addressName)"
             }
             
             let (textLayout, textApply) = makeTextLayout(TextNodeLayoutArguments(attributedString: string, backgroundColor: nil, maximumNumberOfLines: 1, truncationType: .end, constrainedSize: CGSize(width: params.width - leftInset - rightInset, height: 100.0), alignment: .natural, cutout: nil, insets: UIEdgeInsets()))
@@ -225,10 +214,6 @@ final class MentionChatInputPanelItemNode: ListViewItemNode {
                     strongSelf.separatorNode.frame = CGRect(origin: CGPoint(x: leftInset, y: !item.inverted ? (nodeLayout.contentSize.height - UIScreenPixel) : 0.0), size: CGSize(width: params.width - leftInset, height: UIScreenPixel))
                     
                     strongSelf.highlightedBackgroundNode.frame = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: CGSize(width: params.width, height: nodeLayout.size.height + UIScreenPixel))
-                    
-                    strongSelf.activateAreaNode.accessibilityLabel = title
-                    strongSelf.activateAreaNode.accessibilityValue = username
-                    strongSelf.activateAreaNode.frame = CGRect(origin: .zero, size: nodeLayout.size)
                     
                     if let peer = item.peer as? TelegramUser, let _ = peer.botInfo {
                         strongSelf.setRevealOptions([ItemListRevealOption(key: 0, title: item.presentationData.strings.Common_Delete, icon: .none, color: item.presentationData.theme.list.itemDisclosureActions.destructive.fillColor, textColor: item.presentationData.theme.list.itemDisclosureActions.destructive.foregroundColor)])

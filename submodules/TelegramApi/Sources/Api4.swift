@@ -394,13 +394,13 @@ public extension Api {
 }
 public extension Api {
     enum CodeSettings: TypeConstructorDescription {
-        case codeSettings(flags: Int32, logoutTokens: [Buffer]?, token: String?, appSandbox: Api.Bool?)
+        case codeSettings(flags: Int32, logoutTokens: [Buffer]?)
     
     public func serialize(_ buffer: Buffer, _ boxed: Swift.Bool) {
     switch self {
-                case .codeSettings(let flags, let logoutTokens, let token, let appSandbox):
+                case .codeSettings(let flags, let logoutTokens):
                     if boxed {
-                        buffer.appendInt32(-1390068360)
+                        buffer.appendInt32(-1973130814)
                     }
                     serializeInt32(flags, buffer: buffer, boxed: false)
                     if Int(flags) & Int(1 << 6) != 0 {buffer.appendInt32(481674261)
@@ -408,16 +408,14 @@ public extension Api {
                     for item in logoutTokens! {
                         serializeBytes(item, buffer: buffer, boxed: false)
                     }}
-                    if Int(flags) & Int(1 << 8) != 0 {serializeString(token!, buffer: buffer, boxed: false)}
-                    if Int(flags) & Int(1 << 8) != 0 {appSandbox!.serialize(buffer, true)}
                     break
     }
     }
     
     public func descriptionFields() -> (String, [(String, Any)]) {
         switch self {
-                case .codeSettings(let flags, let logoutTokens, let token, let appSandbox):
-                return ("codeSettings", [("flags", flags as Any), ("logoutTokens", logoutTokens as Any), ("token", token as Any), ("appSandbox", appSandbox as Any)])
+                case .codeSettings(let flags, let logoutTokens):
+                return ("codeSettings", [("flags", flags as Any), ("logoutTokens", logoutTokens as Any)])
     }
     }
     
@@ -428,18 +426,10 @@ public extension Api {
             if Int(_1!) & Int(1 << 6) != 0 {if let _ = reader.readInt32() {
                 _2 = Api.parseVector(reader, elementSignature: -1255641564, elementType: Buffer.self)
             } }
-            var _3: String?
-            if Int(_1!) & Int(1 << 8) != 0 {_3 = parseString(reader) }
-            var _4: Api.Bool?
-            if Int(_1!) & Int(1 << 8) != 0 {if let signature = reader.readInt32() {
-                _4 = Api.parse(reader, signature: signature) as? Api.Bool
-            } }
             let _c1 = _1 != nil
             let _c2 = (Int(_1!) & Int(1 << 6) == 0) || _2 != nil
-            let _c3 = (Int(_1!) & Int(1 << 8) == 0) || _3 != nil
-            let _c4 = (Int(_1!) & Int(1 << 8) == 0) || _4 != nil
-            if _c1 && _c2 && _c3 && _c4 {
-                return Api.CodeSettings.codeSettings(flags: _1!, logoutTokens: _2, token: _3, appSandbox: _4)
+            if _c1 && _c2 {
+                return Api.CodeSettings.codeSettings(flags: _1!, logoutTokens: _2)
             }
             else {
                 return nil

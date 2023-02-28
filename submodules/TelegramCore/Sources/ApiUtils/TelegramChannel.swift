@@ -3,10 +3,7 @@ import Postbox
 
 
 public enum TelegramChannelPermission {
-    case sendText
-    case sendPhoto
-    case sendVideo
-    case sendSomething
+    case sendMessages
     case pinMessages
     case manageTopics
     case createTopics
@@ -33,7 +30,7 @@ public extension TelegramChannel {
             return true
         }
         switch permission {
-            case .sendText:
+            case .sendMessages:
                 if case .broadcast = self.info {
                     if let adminRights = self.adminRights {
                         return adminRights.rights.contains(.canPostMessages)
@@ -44,80 +41,10 @@ public extension TelegramChannel {
                     if let _ = self.adminRights {
                         return true
                     }
-                    if let bannedRights = self.bannedRights, bannedRights.flags.contains(.banSendText) {
+                    if let bannedRights = self.bannedRights, bannedRights.flags.contains(.banSendMessages) {
                         return false
                     }
-                    if let defaultBannedRights = self.defaultBannedRights, defaultBannedRights.flags.contains(.banSendText) {
-                        return false
-                    }
-                    return true
-                }
-            case .sendPhoto:
-                if case .broadcast = self.info {
-                    if let adminRights = self.adminRights {
-                        return adminRights.rights.contains(.canPostMessages)
-                    } else {
-                        return false
-                    }
-                } else {
-                    if let _ = self.adminRights {
-                        return true
-                    }
-                    if let bannedRights = self.bannedRights, bannedRights.flags.contains(.banSendPhotos) {
-                        return false
-                    }
-                    if let defaultBannedRights = self.defaultBannedRights, defaultBannedRights.flags.contains(.banSendPhotos) {
-                        return false
-                    }
-                    return true
-                }
-            case .sendVideo:
-                if case .broadcast = self.info {
-                    if let adminRights = self.adminRights {
-                        return adminRights.rights.contains(.canPostMessages)
-                    } else {
-                        return false
-                    }
-                } else {
-                    if let _ = self.adminRights {
-                        return true
-                    }
-                    if let bannedRights = self.bannedRights, bannedRights.flags.contains(.banSendVideos) {
-                        return false
-                    }
-                    if let defaultBannedRights = self.defaultBannedRights, defaultBannedRights.flags.contains(.banSendVideos) {
-                        return false
-                    }
-                    return true
-                }
-            case .sendSomething:
-                if case .broadcast = self.info {
-                    if let adminRights = self.adminRights {
-                        return adminRights.rights.contains(.canPostMessages)
-                    } else {
-                        return false
-                    }
-                } else {
-                    if let _ = self.adminRights {
-                        return true
-                    }
-                    
-                    let flags: TelegramChatBannedRightsFlags = [
-                        .banSendText,
-                        .banSendInstantVideos,
-                        .banSendVoice,
-                        .banSendPhotos,
-                        .banSendVideos,
-                        .banSendStickers,
-                        .banSendPolls,
-                        .banSendFiles,
-                        .banSendInline
-                    ]
-                    
-                    if let bannedRights = self.bannedRights, bannedRights.flags.intersection(flags) == flags {
-                        return false
-                    }
-                    if let defaultBannedRights = self.defaultBannedRights, defaultBannedRights.flags.intersection(flags) == flags {
+                    if let defaultBannedRights = self.defaultBannedRights, defaultBannedRights.flags.contains(.banSendMessages) {
                         return false
                     }
                     return true

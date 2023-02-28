@@ -203,8 +203,6 @@ private final class ThemeCarouselThemeItemIconNode : ListViewItemNode {
     private var placeholderNode: StickerShimmerEffectNode
     var snapshotView: UIView?
     
-    private let activateAreaNode: AccessibilityAreaNode
-    
     var item: ThemeCarouselThemeIconItem?
     
     override var visibility: ListViewItemNodeVisibility {
@@ -248,8 +246,6 @@ private final class ThemeCarouselThemeItemIconNode : ListViewItemNode {
         self.emojiImageNode = TransformImageNode()
         
         self.placeholderNode = StickerShimmerEffectNode()
-        
-        self.activateAreaNode = AccessibilityAreaNode()
 
         super.init(layerBacked: false, dynamicBounce: false, rotated: false, seeThrough: false)
         
@@ -276,8 +272,6 @@ private final class ThemeCarouselThemeItemIconNode : ListViewItemNode {
             }
             firstTime = false
         }
-        
-        self.addSubnode(self.activateAreaNode)
     }
 
     deinit {
@@ -448,16 +442,6 @@ private final class ThemeCarouselThemeItemIconNode : ListViewItemNode {
                         animatedStickerNode.frame = emojiFrame
                         animatedStickerNode.updateLayout(size: emojiFrame.size)
                     }
-                    
-                    let presentationData = item.context.sharedContext.currentPresentationData.with { $0 }
-                    strongSelf.activateAreaNode.accessibilityLabel = item.themeReference.emoticon.flatMap { presentationData.strings.Appearance_VoiceOver_Theme($0).string }
-                    if item.selected {
-                        strongSelf.activateAreaNode.accessibilityTraits = [.button, .selected]
-                    } else {
-                        strongSelf.activateAreaNode.accessibilityTraits = [.button]
-                    }
-                    
-                    strongSelf.activateAreaNode.frame = CGRect(origin: .zero, size: itemLayout.size)
                 }
             })
         }

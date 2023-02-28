@@ -108,6 +108,7 @@ private final class WebAppAlertContentNode: AlertContentNode {
             self.addSubnode(self.allowWriteLabelNode)
         }
         
+    
         self.addSubnode(self.actionNodesSeparator)
         
         for actionNode in self.actionNodes {
@@ -315,14 +316,10 @@ public func addWebAppToAttachmentController(context: AccountContext, peerName: S
     var contentNode: WebAppAlertContentNode?
     let actions: [TextAlertAction] = [TextAlertAction(type: .genericAction, title: presentationData.strings.Common_Cancel, action: {
         dismissImpl?(true)
-    }), TextAlertAction(type: .defaultAction, title: presentationData.strings.WebApp_AddToAttachmentAdd, action: { [weak contentNode] in
+    }), TextAlertAction(type: .defaultAction, title: presentationData.strings.WebApp_AddToAttachmentAdd, action: {
         dismissImpl?(true)
       
-        if requestWriteAccess, let allowWriteAccess = contentNode?.allowWriteAccess {
-            completion(allowWriteAccess)
-        } else {
-            completion(false)
-        }
+        completion(true)
     })]
     
     contentNode = WebAppAlertContentNode(account: context.account, theme: AlertControllerTheme(presentationData: presentationData), ptheme: theme, strings: strings, peerName: peerName, icons: icons, requestWriteAccess: requestWriteAccess, actions: actions)

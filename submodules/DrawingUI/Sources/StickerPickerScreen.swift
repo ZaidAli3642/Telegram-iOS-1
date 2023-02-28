@@ -146,7 +146,7 @@ private final class StickerSelectionComponent: Component {
                     defaultToEmojiTab: false,
                     externalTopPanelContainer: self.panelHostView,
                     externalBottomPanelContainer: nil,
-                    displayTopPanelBackground: .blur,
+                    displayTopPanelBackground: true,
                     topPanelExtensionUpdated: { _, _ in },
                     hideInputUpdated: { _, _, _ in },
                     hideTopPanelUpdated: { _, _ in },
@@ -154,7 +154,6 @@ private final class StickerSelectionComponent: Component {
                     switchToGifSubject: { _ in },
                     reorderItems: { _, _ in },
                     makeSearchContainerNode: { _ in return nil },
-                    contentIdUpdated: { _ in },
                     deviceMetrics: component.deviceMetrics,
                     hiddenInputHeight: 0.0,
                     inputHeight: 0.0,
@@ -276,12 +275,12 @@ class StickerPickerScreen: ViewController {
                 openFeatured: nil,
                 openSearch: {
                 },
-                addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+                addGroupAction: { [weak self] groupId, isPremiumLocked in
                     guard let strongSelf = self, let controller = strongSelf.controller, let collectionId = groupId.base as? ItemCollectionId else {
                         return
                     }
                     let context = controller.context
-                    let viewKey = PostboxViewKey.orderedItemList(id: Namespaces.OrderedItemList.CloudFeaturedEmojiPacks)
+                    let viewKey = PostboxViewKey.orderedItemList(id: Namespaces.OrderedItemList.CloudFeaturedStickerPacks)
                     let _ = (context.account.postbox.combinedView(keys: [viewKey])
                     |> take(1)
                     |> deliverOnMainQueue).start(next: { views in
@@ -318,24 +317,11 @@ class StickerPickerScreen: ViewController {
                     guard let strongSelf = self, let controller = strongSelf.controller else {
                         return
                     }
-                    let presentationData = controller.context.sharedContext.currentPresentationData.with { $0 }.withUpdated(theme: defaultDarkColorPresentationTheme)
-                    let context = controller.context
-                    if groupId == AnyHashable("recent") {
+                    if groupId == AnyHashable("popular") {
+                        let presentationData = controller.context.sharedContext.currentPresentationData.with { $0 }.withUpdated(theme: defaultDarkColorPresentationTheme)
                         let actionSheet = ActionSheetController(theme: ActionSheetControllerTheme(presentationTheme: presentationData.theme, fontSize: presentationData.listsFontSize))
                         var items: [ActionSheetItem] = []
-                        items.append(ActionSheetButtonItem(title: presentationData.strings.Emoji_ClearRecent, color: .destructive, action: { [weak actionSheet] in
-                            actionSheet?.dismissAnimated()
-                            let _ = context.engine.stickers.clearRecentlyUsedEmoji().start()
-                        }))
-                        actionSheet.setItemGroups([ActionSheetItemGroup(items: items), ActionSheetItemGroup(items: [
-                            ActionSheetButtonItem(title: presentationData.strings.Common_Cancel, color: .accent, font: .bold, action: { [weak actionSheet] in
-                                actionSheet?.dismissAnimated()
-                            })
-                        ])])
-                        context.sharedContext.mainWindow?.presentInGlobalOverlay(actionSheet)
-                    } else if groupId == AnyHashable("popular") {
-                        let actionSheet = ActionSheetController(theme: ActionSheetControllerTheme(presentationTheme: presentationData.theme, fontSize: presentationData.listsFontSize))
-                        var items: [ActionSheetItem] = []
+                        let context = controller.context
                         items.append(ActionSheetTextItem(title: presentationData.strings.Chat_ClearReactionsAlertText, parseMarkdown: true))
                         items.append(ActionSheetButtonItem(title: presentationData.strings.Chat_ClearReactionsAlertAction, color: .destructive, action: { [weak actionSheet] in
                             actionSheet?.dismissAnimated()
@@ -365,12 +351,11 @@ class StickerPickerScreen: ViewController {
                 },
                 requestUpdate: { _ in
                 },
-                updateSearchQuery: { _ in
+                updateSearchQuery: { _, _ in
                 },
                 updateScrollingToItemGroup: { [weak self] in
                     self?.update(isExpanded: true, transition: .animated(duration: 0.4, curve: .spring))
                 },
-                onScroll: {},
                 chatPeerId: nil,
                 peekBehavior: nil,
                 customLayout: nil,
@@ -392,7 +377,7 @@ class StickerPickerScreen: ViewController {
                 openStickerSettings: nil,
                 openFeatured: nil,
                 openSearch: {},
-                addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+                addGroupAction: { [weak self] groupId, isPremiumLocked in
                     guard let strongSelf = self, let controller = strongSelf.controller, let collectionId = groupId.base as? ItemCollectionId else {
                         return
                     }
@@ -443,12 +428,11 @@ class StickerPickerScreen: ViewController {
                 },
                 requestUpdate: { _ in
                 },
-                updateSearchQuery: { _ in
+                updateSearchQuery: { _, _ in
                 },
                 updateScrollingToItemGroup: { [weak self] in
                     self?.update(isExpanded: true, transition: .animated(duration: 0.4, curve: .spring))
                 },
-                onScroll: {},
                 chatPeerId: nil,
                 peekBehavior: nil,
                 customLayout: nil,
@@ -483,7 +467,7 @@ class StickerPickerScreen: ViewController {
                 openFeatured: nil,
                 openSearch: {
                 },
-                addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+                addGroupAction: { [weak self] groupId, isPremiumLocked in
                     guard let strongSelf = self, let controller = strongSelf.controller, let collectionId = groupId.base as? ItemCollectionId else {
                         return
                     }
@@ -568,12 +552,11 @@ class StickerPickerScreen: ViewController {
                 },
                 requestUpdate: { _ in
                 },
-                updateSearchQuery: { _ in
+                updateSearchQuery: { _, _ in
                 },
                 updateScrollingToItemGroup: { [weak self] in
                     self?.update(isExpanded: true, transition: .animated(duration: 0.4, curve: .spring))
                 },
-                onScroll: {},
                 chatPeerId: nil,
                 peekBehavior: stickerPeekBehavior,
                 customLayout: nil,

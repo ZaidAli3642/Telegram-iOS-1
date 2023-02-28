@@ -21,7 +21,7 @@ const CGFloat TGCameraModeControlVerticalInteritemSpace = 29.0f;
 
 @implementation TGCameraModeControl
 
-- (instancetype)initWithFrame:(CGRect)frame avatar:(bool)avatar videoModeByDefault:(bool)videoModeByDefault
+- (instancetype)initWithFrame:(CGRect)frame avatar:(bool)avatar
 {
     self = [super initWithFrame:frame];
     if (self != nil)
@@ -87,11 +87,7 @@ const CGFloat TGCameraModeControlVerticalInteritemSpace = 29.0f;
             _wrapperView.frame = CGRectMake(33, 0, self.frame.size.width, topOffset - TGCameraModeControlVerticalInteritemSpace);
         }
         
-        if (videoModeByDefault) {
-            self.cameraMode = PGCameraModeVideo;
-        } else {
-            self.cameraMode = PGCameraModePhoto;
-        }
+        self.cameraMode = PGCameraModePhoto;
     }
     return self;
 }

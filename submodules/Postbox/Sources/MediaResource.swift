@@ -57,7 +57,6 @@ public enum MediaResourceUserContentType: UInt8, Equatable {
     case file = 4
     case sticker = 6
     case avatar = 7
-    case audioVideoMessage = 8
 }
 
 public struct MediaResourceFetchParameters {

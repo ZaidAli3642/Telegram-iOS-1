@@ -363,9 +363,7 @@
         _landscapeToolbarView.cancelPressed = toolbarCancelPressed;
         _landscapeToolbarView.donePressed = toolbarDonePressed;
         _landscapeToolbarView.doneLongPressed = toolbarDoneLongPressed;
-        
-        if ([UIDevice currentDevice].userInterfaceIdiom != UIUserInterfaceIdiomPad)
-            [_wrapperView addSubview:_landscapeToolbarView];
+        [_wrapperView addSubview:_landscapeToolbarView];
     }
     return self;
 }

@@ -140,7 +140,7 @@ private final class MediaGroupsGridAlbumItemNode : ListViewItemNode {
     override func didLoad() {
         super.didLoad()
         
-        self.imageNode.cornerRadius = 5.0
+        self.imageNode.cornerRadius = 10.0
         if #available(iOS 13.0, *) {
             self.imageNode.layer.cornerCurve = .continuous
         }
@@ -221,11 +221,11 @@ private func preparedTransition(action: @escaping (PHAssetCollection) -> Void, f
 }
 
 final class MediaGroupsAlbumGridItem: ListViewItem {
-    let presentationData: PresentationData
+    let presentationData: ItemListPresentationData
     let collections: [PHAssetCollection]
     let action: (PHAssetCollection) -> Void
     
-    public init(presentationData: PresentationData, collections: [PHAssetCollection], action: @escaping (PHAssetCollection) -> Void) {
+    public init(presentationData: ItemListPresentationData, collections: [PHAssetCollection], action: @escaping (PHAssetCollection) -> Void) {
         self.presentationData = presentationData
         self.collections = collections
         self.action = action
@@ -347,8 +347,7 @@ private class MediaGroupsAlbumGridItemNode: ListViewItemNode {
                                 firstItem = result.firstObject
                             }
                             if let firstItem = firstItem {
-                                let count = presentationStringsFormattedNumber(Int32(result.count), item.presentationData.dateTimeFormat.groupingSeparator)
-                                entries.append(MediaGroupsGridAlbumEntry(theme: item.presentationData.theme, index: index, collection: collection, firstItem: firstItem, count: count))
+                                entries.append(MediaGroupsGridAlbumEntry(theme: item.presentationData.theme, index: index, collection: collection, firstItem: firstItem, count: presentationStringsFormattedNumber(Int32(result.count))))
                                 index += 1
                             }
                         }

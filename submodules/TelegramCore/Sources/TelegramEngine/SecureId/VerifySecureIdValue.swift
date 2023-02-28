@@ -19,19 +19,17 @@ public struct SecureIdPreparePhoneVerificationPayload {
 }
 
 public func secureIdPreparePhoneVerification(network: Network, value: SecureIdPhoneValue) -> Signal<SecureIdPreparePhoneVerificationPayload, SecureIdPreparePhoneVerificationError> {
-    return network.request(Api.functions.account.sendVerifyPhoneCode(phoneNumber: value.phone, settings: .codeSettings(flags: 0, logoutTokens: nil, token: nil, appSandbox: nil)), automaticFloodWait: false)
+    return network.request(Api.functions.account.sendVerifyPhoneCode(phoneNumber: value.phone, settings: .codeSettings(flags: 0, logoutTokens: nil)), automaticFloodWait: false)
     |> mapError { error -> SecureIdPreparePhoneVerificationError in
         if error.errorDescription.hasPrefix("FLOOD_WAIT") {
             return .flood
         }
         return .generic
     }
-    |> mapToSignal { sentCode -> Signal<SecureIdPreparePhoneVerificationPayload, SecureIdPreparePhoneVerificationError> in
+    |> map { sentCode -> SecureIdPreparePhoneVerificationPayload in
         switch sentCode {
-        case let .sentCode(_, type, phoneCodeHash, nextType, timeout):
-            return .single(SecureIdPreparePhoneVerificationPayload(type: SentAuthorizationCodeType(apiType: type), nextType: nextType.flatMap(AuthorizationCodeNextType.init), timeout: timeout, phone: value.phone, phoneCodeHash: phoneCodeHash))
-        case .sentCodeSuccess:
-            return .never()
+            case let .sentCode(_, type, phoneCodeHash, nextType, timeout):
+                return SecureIdPreparePhoneVerificationPayload(type: SentAuthorizationCodeType(apiType: type), nextType: nextType.flatMap(AuthorizationCodeNextType.init), timeout: timeout, phone: value.phone, phoneCodeHash: phoneCodeHash)
         }
     }
 }

@@ -373,11 +373,9 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
             self.iconNode.image = generateTintedImage(image: iconImage, color: presentationData.theme.list.itemAccentColor)
             self.iconNode.isHidden = false
             self.iconButtonNode.isHidden = false
-            self.iconButtonNode.accessibilityLabel = presentationData.strings.InviteLink_QRCode_Share
         } else {
             self.iconNode.isHidden = true
             self.iconButtonNode.isHidden = true
-            self.iconButtonNode.accessibilityLabel = nil
         }
         
         let additionalSideInset: CGFloat = !self.iconNode.isHidden ? 32.0 : 0.0
@@ -404,7 +402,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
                 let entities = generateTextEntities(additionalText, enabledTypes: [.mention])
                 let attributedAdditionalText = stringWithAppliedEntities(additionalText, entities: entities, baseColor: presentationData.theme.list.itemPrimaryTextColor, linkColor: presentationData.theme.list.itemAccentColor, baseFont: baseFont, linkFont: linkFont, boldFont: boldFont, italicFont: italicFont, boldItalicFont: boldItalicFont, fixedFont: titleFixedFont, blockQuoteFont: baseFont, underlineLinks: false, message: nil)
                 
-                self.additionalTextNode.maximumNumberOfLines = 10
+                self.additionalTextNode.maximumNumberOfLines = 3
                 self.additionalTextNode.attributedText = attributedAdditionalText
             } else {
                 self.additionalTextNode.attributedText = nil
@@ -526,6 +524,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
         self.activateArea.frame = CGRect(origin: CGPoint(), size: CGSize(width: width, height: height))
         self.activateArea.accessibilityLabel = item.label
         self.activateArea.accessibilityValue = item.text
+        
         
         let contentSize = CGSize(width: width, height: height)
         self.containerNode.frame = CGRect(origin: CGPoint(), size: contentSize)

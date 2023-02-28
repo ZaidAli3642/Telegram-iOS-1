@@ -469,8 +469,7 @@ class ChatMessageInstantVideoItemNode: ChatMessageItemView, UIGestureRecognizerD
                             parentMessage: item.message,
                             constrainedSize: CGSize(width: availableWidth, height: CGFloat.greatestFiniteMagnitude),
                             animationCache: item.controllerInteraction.presentationContext.animationCache,
-                            animationRenderer: item.controllerInteraction.presentationContext.animationRenderer,
-                            associatedData: item.associatedData
+                            animationRenderer: item.controllerInteraction.presentationContext.animationRenderer
                         ))
                     }
                 } else if let _ = attribute as? InlineBotMessageAttribute {

@@ -214,7 +214,6 @@ final class ChatMessageAccessibilityData {
                 
                 loop: for media in message.media {
                     if let _ = media as? TelegramMediaImage {
-                        traits.insert(.image)
                         if isIncoming {
                             if announceIncomingAuthors, let authorName = authorName {
                                 label = item.presentationData.strings.VoiceOver_Chat_PhotoFrom(authorName).string
@@ -862,8 +861,6 @@ public class ChatMessageItemView: ListViewItemNode, ChatMessageItemNodeProtocol 
                     })
                 case let .openWebView(url, simple):
                     item.controllerInteraction.openWebView(button.title, url, simple, false)
-                case .requestPeer:
-                    break
             }
         }
     }

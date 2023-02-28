@@ -10,7 +10,6 @@ swift_library(
         "-warnings-as-errors",
     ],
     deps = [
-        "//submodules/Display"
     ],
     visibility = [
         "//visibility:public",

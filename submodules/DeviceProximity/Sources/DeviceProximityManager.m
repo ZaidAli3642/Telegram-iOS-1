@@ -46,9 +46,6 @@
                      for (void (^f)(bool) in [strongSelf->_subscribers copyItems]) {
                          f(proximityState);
                      }
-                     if (strongSelf.proximityChanged != nil) {
-                         strongSelf.proximityChanged(proximityState);
-                     }
                  } else if (!strongSelf->_proximityState && [strongSelf->_subscribers isEmpty]) {
                      [UIDevice currentDevice].proximityMonitoringEnabled = false;
                  }
@@ -93,18 +90,12 @@
             for (void (^f)(bool) in [_subscribers copyItems]) {
                 f(_proximityState);
             }
-            if (self.proximityChanged != nil) {
-                self.proximityChanged(_proximityState);
-            }
         }
     } else {
         if (_proximityState) {
             _proximityState = false;
             for (void (^f)(bool) in [_subscribers copyItems]) {
                 f(_proximityState);
-            }
-            if (self.proximityChanged != nil) {
-                self.proximityChanged(_proximityState);
             }
         } else {
             [UIDevice currentDevice].proximityMonitoringEnabled = false;

@@ -345,22 +345,19 @@ final class StorageUsagePanelContainerComponent: Component {
     let dateTimeFormat: PresentationDateTimeFormat
     let insets: UIEdgeInsets
     let items: [Item]
-    let currentPanelUpdated: (AnyHashable, Transition) -> Void
     
     init(
         theme: PresentationTheme,
         strings: PresentationStrings,
         dateTimeFormat: PresentationDateTimeFormat,
         insets: UIEdgeInsets,
-        items: [Item],
-        currentPanelUpdated: @escaping (AnyHashable, Transition) -> Void
+        items: [Item]
     ) {
         self.theme = theme
         self.strings = strings
         self.dateTimeFormat = dateTimeFormat
         self.insets = insets
         self.items = items
-        self.currentPanelUpdated = currentPanelUpdated
     }
     
     static func ==(lhs: StorageUsagePanelContainerComponent, rhs: StorageUsagePanelContainerComponent) -> Bool {
@@ -442,13 +439,6 @@ final class StorageUsagePanelContainerComponent: Component {
             fatalError("init(coder:) has not been implemented")
         }
         
-        var currentPanelView: UIView? {
-            guard let currentId = self.currentId, let panel = self.visiblePanels[currentId] else {
-                return nil
-            }
-            return panel.view
-        }
-        
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
             return false
         }
@@ -500,6 +490,13 @@ final class StorageUsagePanelContainerComponent: Component {
                 }
                 self.transitionFraction = transitionFraction
                 self.state?.updated(transition: .immediate)
+                
+                //                let nextKey = availablePanes[updatedIndex]
+                //                print(transitionFraction)
+                //self.paneTransitionPromise.set(transitionFraction)
+                
+                //self.update(size: size, sideInset: sideInset, bottomInset: bottomInset, visibleHeight: visibleHeight, expansionFraction: expansionFraction, presentationData: presentationData, data: data, transition: .immediate)
+                //self.currentPaneUpdated?(false)
             case .cancelled, .ended:
                 guard let component = self.component, let currentId = self.currentId else {
                     return
@@ -529,11 +526,7 @@ final class StorageUsagePanelContainerComponent: Component {
                 }
                 self.transitionFraction = 0.0
                 
-                let transition = Transition(animation: .curve(duration: 0.35, curve: .spring))
-                if let currentId = self.currentId {
-                    self.state?.updated(transition: transition)
-                    component.currentPanelUpdated(currentId, transition)
-                }
+                self.state?.updated(transition: Transition(animation: .curve(duration: 0.35, curve: .spring)))
                 
                 self.animatingTransition = false
                 //self.currentPaneUpdated?(false)
@@ -615,9 +608,7 @@ final class StorageUsagePanelContainerComponent: Component {
                         }
                         if component.items.contains(where: { $0.id == id }) {
                             self.currentId = id
-                            let transition = Transition(animation: .curve(duration: 0.35, curve: .spring))
-                            self.state?.updated(transition: transition)
-                            component.currentPanelUpdated(id, transition)
+                            self.state?.updated(transition: Transition(animation: .curve(duration: 0.35, curve: .spring)))
                         }
                     }
                 )),

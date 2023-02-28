@@ -72,7 +72,6 @@ final class CommandMenuChatInputContextPanelNode: ChatInputContextPanelNode {
         self.listView.clipsToBounds = false
         self.listView.isOpaque = false
         self.listView.stackFromBottom = true
-        self.listView.keepBottomItemOverscrollBackground = theme.list.plainBackgroundColor
         self.listView.limitHitTestToNodes = true
         self.listView.view.disablesInteractiveTransitionGestureRecognizer = true
         self.listView.accessibilityPageScrolledString = { row, count in
@@ -235,7 +234,7 @@ final class CommandMenuChatInputContextPanelNode: ChatInputContextPanelNode {
             self.listView.keepBottomItemOverscrollBackground = self.theme.list.plainBackgroundColor
             
             let new = self.currentEntries?.map({$0.withUpdatedTheme(interfaceState.theme)}) ?? []
-            self.prepareTransition(from: self.currentEntries, to: new)
+            prepareTransition(from: self.currentEntries, to: new)
         }
     }
     

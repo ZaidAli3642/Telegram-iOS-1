@@ -65,8 +65,6 @@ private final class ChatButtonKeyboardInputButtonNode: HighlightTrackingButtonNo
         
         super.init()
         
-        self.accessibilityTraits = [.button]
-        
         self.addSubnode(self.backgroundContainerNode)
         
         self.backgroundContainerNode.addSubnode(self.backgroundColorNode)
@@ -80,6 +78,7 @@ private final class ChatButtonKeyboardInputButtonNode: HighlightTrackingButtonNo
             if let strongSelf = self {
                 if highlighted, !strongSelf.bounds.width.isZero {
                     let scale = (strongSelf.bounds.width - 10.0) / strongSelf.bounds.width
+                    
                     strongSelf.layer.animateScale(from: 1.0, to: scale, duration: 0.15, removeOnCompletion: false)
                     
                     strongSelf.backgroundContainerNode.layer.removeAnimation(forKey: "opacity")
@@ -96,7 +95,6 @@ private final class ChatButtonKeyboardInputButtonNode: HighlightTrackingButtonNo
     
     override func setAttributedTitle(_ title: NSAttributedString, for state: UIControl.State) {
         self.textNode.attributedText = title
-        self.accessibilityLabel = title.string
     }
     
     private var absoluteRect: (CGRect, CGSize)?
@@ -263,7 +261,7 @@ final class ChatButtonKeyboardInputNode: ChatInputNode {
         }
     }
     
-    override func updateLayout(width: CGFloat, leftInset: CGFloat, rightInset: CGFloat, bottomInset: CGFloat, standardInputHeight: CGFloat, inputHeight: CGFloat, maximumHeight: CGFloat, inputPanelHeight: CGFloat, transition: ContainedViewLayoutTransition, interfaceState: ChatPresentationInterfaceState, layoutMetrics: LayoutMetrics, deviceMetrics: DeviceMetrics, isVisible: Bool, isExpanded: Bool) -> (CGFloat, CGFloat) {
+    override func updateLayout(width: CGFloat, leftInset: CGFloat, rightInset: CGFloat, bottomInset: CGFloat, standardInputHeight: CGFloat, inputHeight: CGFloat, maximumHeight: CGFloat, inputPanelHeight: CGFloat, transition: ContainedViewLayoutTransition, interfaceState: ChatPresentationInterfaceState, deviceMetrics: DeviceMetrics, isVisible: Bool, isExpanded: Bool) -> (CGFloat, CGFloat) {
         transition.updateFrame(node: self.separatorNode, frame: CGRect(origin: CGPoint(), size: CGSize(width: width, height: UIScreenPixel)))
         
         if self.backgroundNode == nil {
@@ -434,10 +432,6 @@ final class ChatButtonKeyboardInputNode: ChatInputNode {
                     })
                 case let .openWebView(url, simple):
                     self.controllerInteraction.openWebView(markupButton.title, url, simple, false)
-                case let .requestPeer(peerType, buttonId):
-                    if let message = self.message {
-                    self.controllerInteraction.openRequestedPeerSelection(message.id, peerType, buttonId)
-                    }
             }
             if dismissIfOnce {
                 if let message = self.message {

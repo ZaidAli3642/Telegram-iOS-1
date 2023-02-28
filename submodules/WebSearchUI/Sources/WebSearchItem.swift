@@ -213,13 +213,8 @@ final class WebSearchItemNode: GridItemNode {
     func updateSelectionState(animated: Bool) {
         if self.checkNode == nil, let item = self.item, let _ = item.controllerInteraction.selectionState {
             let checkNode = InteractiveCheckNode(theme: CheckNodeTheme(theme: item.theme, style: .overlay))
-            checkNode.valueChanged = { [weak self] value in
-                guard let self else {
-                    return
-                }
-                if !item.controllerInteraction.toggleSelection(item.result, value) {
-                    self.checkNode?.setSelected(false, animated: false)
-                }
+            checkNode.valueChanged = { value in
+                item.controllerInteraction.toggleSelection(item.result, value)
             }
             self.addSubnode(checkNode)
             self.checkNode = checkNode

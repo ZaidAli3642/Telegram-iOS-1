@@ -19,10 +19,6 @@ public class SpeechSynthesizerHolder: NSObject, AVSpeechSynthesizerDelegate {
         self.speechSynthesizer.delegate = self
     }
     
-    deinit {
-        self.stop()
-    }
-    
     public func stop() {
         self.speechSynthesizer.stopSpeaking(at: .immediate)
     }

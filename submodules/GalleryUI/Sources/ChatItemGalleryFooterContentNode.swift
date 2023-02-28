@@ -188,7 +188,8 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
                     case .info:
                         self.authorNameNode.isHidden = false
                         self.dateNode.isHidden = false
-                        self.hasSeekControls = false
+                        self.backwardButton.isHidden = true
+                        self.forwardButton.isHidden = true
                         self.playbackControlButton.isHidden = true
                         self.statusButtonNode.isHidden = true
                         self.statusNode.isHidden = true
@@ -196,7 +197,8 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
                         self.currentIsPaused = true
                         self.authorNameNode.isHidden = true
                         self.dateNode.isHidden = true
-                        self.hasSeekControls = seekable
+                        self.backwardButton.isHidden = !seekable
+                        self.forwardButton.isHidden = !seekable
                         if status == .Local {
                             self.playbackControlButton.isHidden = false
                             self.playPauseIconNode.enqueueState(.play, animated: true)
@@ -224,7 +226,8 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
                         self.currentIsPaused = paused
                         self.authorNameNode.isHidden = true
                         self.dateNode.isHidden = true
-                        self.hasSeekControls = seekable
+                        self.backwardButton.isHidden = !seekable
+                        self.forwardButton.isHidden = !seekable
                         self.playbackControlButton.isHidden = false
                         
                         let icon: PlayPauseIconNodeState
@@ -238,17 +241,6 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
                         self.statusNode.isHidden = true
                 }
             }
-        }
-    }
-    
-    var hasSeekControls: Bool = false {
-        didSet {
-            let alpha = self.hasSeekControls ? 1.0 : 0.0
-            let transition = ContainedViewLayoutTransition.animated(duration: 0.2, curve: .easeInOut)
-            transition.updateAlpha(node: self.backwardButton, alpha: alpha)
-            transition.updateAlpha(node: self.forwardButton, alpha: alpha)
-            self.backwardButton.isUserInteractionEnabled = self.hasSeekControls
-            self.forwardButton.isUserInteractionEnabled = self.hasSeekControls
         }
     }
     
@@ -341,20 +333,17 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
         self.authorNameNode.maximumNumberOfLines = 1
         self.authorNameNode.isUserInteractionEnabled = false
         self.authorNameNode.displaysAsynchronously = false
-    
         self.dateNode = ASTextNode()
         self.dateNode.maximumNumberOfLines = 1
         self.dateNode.isUserInteractionEnabled = false
         self.dateNode.displaysAsynchronously = false
         
         self.backwardButton = PlaybackButtonNode()
-        self.backwardButton.alpha = 0.0
-        self.backwardButton.isUserInteractionEnabled = false
+        self.backwardButton.isHidden = true
         self.backwardButton.backgroundIconNode.image = backwardImage
         
         self.forwardButton = PlaybackButtonNode()
-        self.forwardButton.alpha = 0.0
-        self.forwardButton.isUserInteractionEnabled = false
+        self.forwardButton.isHidden = true
         self.forwardButton.forward = true
         self.forwardButton.backgroundIconNode.image = forwardImage
         
@@ -429,20 +418,9 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
         self.contentNode.addSubnode(self.statusButtonNode)
         
         self.deleteButton.addTarget(self, action: #selector(self.deleteButtonPressed), for: [.touchUpInside])
-        self.deleteButton.accessibilityTraits = [.button]
-        self.deleteButton.accessibilityLabel = presentationData.strings.Gallery_VoiceOver_Delete
-        
         self.fullscreenButton.addTarget(self, action: #selector(self.fullscreenButtonPressed), for: [.touchUpInside])
-        self.fullscreenButton.accessibilityTraits = [.button]
-        self.fullscreenButton.accessibilityLabel = presentationData.strings.Gallery_VoiceOver_Fullscreen
-        
         self.actionButton.addTarget(self, action: #selector(self.actionButtonPressed), for: [.touchUpInside])
-        self.actionButton.accessibilityTraits = [.button]
-        self.actionButton.accessibilityLabel = presentationData.strings.Gallery_VoiceOver_Share
-        
         self.editButton.addTarget(self, action: #selector(self.editButtonPressed), for: [.touchUpInside])
-        self.editButton.accessibilityTraits = [.button]
-        self.editButton.accessibilityLabel = presentationData.strings.Gallery_VoiceOver_Edit
         
         self.backwardButton.addTarget(self, action: #selector(self.backwardButtonPressed), forControlEvents: .touchUpInside)
         self.forwardButton.addTarget(self, action: #selector(self.forwardButtonPressed), forControlEvents: .touchUpInside)
@@ -607,15 +585,12 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
             } else {
                 self.authorNameNode.attributedText = nil
             }
-            self.authorNameNode.accessibilityLabel = self.authorNameNode.attributedText?.string
-            
             if let dateText = dateText {
                 self.dateNode.attributedText = NSAttributedString(string: dateText, font: dateFont, textColor: .white)
             } else {
                 self.dateNode.attributedText = nil
             }
-            self.dateNode.accessibilityLabel = self.dateNode.attributedText?.string
-            
+
             self.requestLayout?(.immediate)
         }
         
@@ -627,7 +602,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
         }
     }
     
-    func setMessage(_ message: Message, displayInfo: Bool = true, translateToLanguage: String? = nil) {
+    func setMessage(_ message: Message, displayInfo: Bool = true) {
         self.currentMessage = message
         
         let canDelete: Bool
@@ -636,13 +611,11 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
         var canFullscreen = false
         
         var canEdit = false
-        var isImage = false
-        var isVideo = false
         for media in message.media {
             if media is TelegramMediaImage {
                 canEdit = true
-                isImage = true
             } else if let media = media as? TelegramMediaFile, !media.isAnimated {
+                var isVideo = false
                 for attribute in media.attributes {
                     switch attribute {
                     case let .Video(_, dimensions, _):
@@ -683,19 +656,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
             } else if let channel = peer as? TelegramChannel {
                 if message.flags.contains(.Incoming) {
                     canDelete = channel.hasPermission(.deleteAllMessages)
-                    if canEdit {
-                        if isImage {
-                            if !channel.hasPermission(.sendPhoto) {
-                                canEdit = false
-                            }
-                        } else if isVideo {
-                            if !channel.hasPermission(.sendVideo) {
-                                canEdit = false
-                            }
-                        } else {
-                            canEdit = false
-                        }
-                    }
+                    canEdit = canEdit && channel.hasPermission(.sendMessages)
                 } else {
                     canDelete = true
                 }
@@ -749,17 +710,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
                     break
                 }
             }
-            var text = message.text
-            if let translateToLanguage, !text.isEmpty {
-                for attribute in message.attributes {
-                    if let attribute = attribute as? TranslationMessageAttribute, !attribute.text.isEmpty, attribute.toLang == translateToLanguage {
-                        text = attribute.text
-                        entities = attribute.entities
-                        break
-                    }
-                }
-            }
-            messageText = galleryCaptionStringWithAppliedEntities(text, entities: entities, message: message)
+            messageText = galleryCaptionStringWithAppliedEntities(message.text, entities: entities, message: message)
         }
                         
         if self.currentMessageText != messageText || canDelete != !self.deleteButton.isHidden || canFullscreen != !self.fullscreenButton.isHidden || canShare != !self.actionButton.isHidden || canEdit != !self.editButton.isHidden || self.currentAuthorNameText != authorNameText || self.currentDateText != dateText {
@@ -778,11 +729,8 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
             } else {
                 self.authorNameNode.attributedText = nil
             }
-            self.authorNameNode.accessibilityLabel = self.authorNameNode.attributedText?.string
-           
             self.dateNode.attributedText = NSAttributedString(string: dateText, font: dateFont, textColor: .white)
-            self.dateNode.accessibilityLabel = self.dateNode.attributedText?.string
-            
+
             if canFullscreen {
                 self.fullscreenButton.isHidden = false
                 self.deleteButton.isHidden = true
@@ -1055,8 +1003,8 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, UIScroll
         self.fullscreenButton.alpha = 1.0
         self.actionButton.alpha = 1.0
         self.editButton.alpha = 1.0
-        self.backwardButton.alpha = self.hasSeekControls ? 1.0 : 0.0
-        self.forwardButton.alpha = self.hasSeekControls ? 1.0 : 0.0
+        self.backwardButton.alpha = 1.0
+        self.forwardButton.alpha = 1.0
         self.statusNode.alpha = 1.0
         self.playbackControlButton.alpha = 1.0
         self.scrollWrapperNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.15)

@@ -2,8 +2,6 @@
 
 @interface DeviceProximityManager : NSObject
 
-@property (nonatomic, copy) void(^ _Nullable proximityChanged)(bool);
-
 + (DeviceProximityManager * _Nonnull)shared;
 
 - (bool)currentValue;

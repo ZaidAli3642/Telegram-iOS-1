@@ -18,7 +18,7 @@ public final class MediaPlaybackStoredState: Codable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
 
         self.timestamp = try container.decode(Double.self, forKey: "timestamp")
-        self.playbackRate = AudioPlaybackRate(rawValue: try container.decode(Int32.self, forKey: "playbackRate"))
+        self.playbackRate = AudioPlaybackRate(rawValue: try container.decode(Int32.self, forKey: "playbackRate")) ?? .x1
     }
     
     public func encode(to encoder: Encoder) throws {

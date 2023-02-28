@@ -216,12 +216,9 @@ private final class PhotoUpdateConfirmationAlertContentNode: AlertContentNode {
     }
 }
 
-func photoUpdateConfirmationController(context: AccountContext, peer: EnginePeer, image: UIImage, text: String, doneTitle: String, isDark: Bool = true, commit: @escaping () -> Void) -> AlertController {
+func photoUpdateConfirmationController(context: AccountContext, peer: EnginePeer, image: UIImage, text: String, doneTitle: String, commit: @escaping () -> Void) -> AlertController {
     let theme = defaultDarkColorPresentationTheme
-    var presentationData = context.sharedContext.currentPresentationData.with { $0 }
-    if isDark {
-        presentationData = presentationData.withUpdated(theme: theme)
-    }
+    let presentationData = context.sharedContext.currentPresentationData.with { $0 }.withUpdated(theme: theme)
     let strings = presentationData.strings
     
     var dismissImpl: ((Bool) -> Void)?

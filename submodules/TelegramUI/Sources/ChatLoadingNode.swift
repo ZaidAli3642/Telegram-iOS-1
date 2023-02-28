@@ -184,16 +184,10 @@ final class ChatLoadingPlaceholderNode: ASDisplayNode {
         
         self.addSubnode(self.containerNode)
         self.containerNode.addSubnode(self.backgroundColorNode)
-        
-        if DeviceMetrics.performance.isGraphicallyCapable {
-            self.containerNode.addSubnode(self.effectNode)
-        }
+        self.containerNode.addSubnode(self.effectNode)
         
         self.addSubnode(self.borderNode)
-        
-        if DeviceMetrics.performance.isGraphicallyCapable {
-            self.borderNode.addSubnode(self.borderEffectNode)
-        }
+        self.borderNode.addSubnode(self.borderEffectNode)
     }
     
     override func didLoad() {
@@ -202,9 +196,7 @@ final class ChatLoadingPlaceholderNode: ASDisplayNode {
         self.containerNode.view.mask = self.maskNode.view
         self.borderNode.view.mask = self.borderMaskNode.view
         
-        if DeviceMetrics.performance.isGraphicallyCapable {
-            self.backgroundNode?.updateIsLooping(true)
-        }
+        self.backgroundNode?.updateIsLooping(true)
     }
     
     private var bottomInset: (Int, CGFloat)?

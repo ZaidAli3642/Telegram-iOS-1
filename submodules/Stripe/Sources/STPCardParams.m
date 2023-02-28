@@ -101,7 +101,7 @@
     NSString *ioValueString = [(NSString *)*ioValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
     NSString *monthString = [@(self.expMonth) stringValue];
-    if ([STPCardValidator validationStateForExpirationYear:ioValueString inMonth:monthString cardBrand:[STPCardValidator brandForNumber:self.number]] != STPCardValidationStateValid) {
+    if ([STPCardValidator validationStateForExpirationYear:ioValueString inMonth:monthString] != STPCardValidationStateValid) {
         return [self.class handleValidationErrorForParameter:@"expYear" error:outError];
     }
     return YES;

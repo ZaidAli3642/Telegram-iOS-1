@@ -27,26 +27,6 @@ enum DrawingTextStyle: Equatable {
     }
 }
 
-enum DrawingTextAnimation: Equatable {
-    case none
-    case typing
-    case wiggle
-    case zoomIn
-    
-    init(animation: DrawingTextEntity.Animation) {
-        switch animation {
-        case .none:
-            self = .none
-        case .typing:
-            self = .typing
-        case .wiggle:
-            self = .wiggle
-        case .zoomIn:
-            self = .zoomIn
-        }
-    }
-}
-
 enum DrawingTextAlignment: Equatable {
     case left
     case center
@@ -251,9 +231,9 @@ final class TextFontComponent: Component {
             self.button.clipsToBounds = true
             self.button.setTitle(value.title, for: .normal)
             self.button.titleLabel?.font = value.uiFont(size: 13.0)
-            self.button.contentEdgeInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 20.0)
+            self.button.contentEdgeInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 26.0)
             var buttonSize = self.button.sizeThatFits(availableSize)
-            buttonSize.width += 20.0
+            buttonSize.width += 39.0 - 13.0
             buttonSize.height = 30.0
             transition.setFrame(view: self.button, frame: CGRect(origin: .zero, size: buttonSize))
             self.button.layer.cornerRadius = 11.0
@@ -286,7 +266,6 @@ final class TextFontComponent: Component {
 final class TextSettingsComponent: CombinedComponent {
     let color: DrawingColor?
     let style: DrawingTextStyle
-    let animation: DrawingTextAnimation
     let alignment: DrawingTextAlignment
     let font: DrawingTextFont
     let isEmojiKeyboard: Bool
@@ -298,7 +277,6 @@ final class TextSettingsComponent: CombinedComponent {
     let updateFastColorPickerPan: (CGPoint) -> Void
     let dismissFastColorPicker: () -> Void
     let toggleStyle: () -> Void
-    let toggleAnimation: () -> Void
     let toggleAlignment: () -> Void
     let presentFontPicker: () -> Void
     let toggleKeyboard: (() -> Void)?
@@ -306,7 +284,6 @@ final class TextSettingsComponent: CombinedComponent {
     init(
         color: DrawingColor?,
         style: DrawingTextStyle,
-        animation: DrawingTextAnimation,
         alignment: DrawingTextAlignment,
         font: DrawingTextFont,
         isEmojiKeyboard: Bool,
@@ -317,14 +294,12 @@ final class TextSettingsComponent: CombinedComponent {
         updateFastColorPickerPan: @escaping (CGPoint) -> Void = { _ in },
         dismissFastColorPicker: @escaping () -> Void = {},
         toggleStyle: @escaping () -> Void,
-        toggleAnimation: @escaping () -> Void,
         toggleAlignment: @escaping () -> Void,
         presentFontPicker: @escaping () -> Void,
         toggleKeyboard: (() -> Void)?
     ) {
         self.color = color
         self.style = style
-        self.animation = animation
         self.alignment = alignment
         self.font = font
         self.isEmojiKeyboard = isEmojiKeyboard
@@ -335,7 +310,6 @@ final class TextSettingsComponent: CombinedComponent {
         self.updateFastColorPickerPan = updateFastColorPickerPan
         self.dismissFastColorPicker = dismissFastColorPicker
         self.toggleStyle = toggleStyle
-        self.toggleAnimation = toggleAnimation
         self.toggleAlignment = toggleAlignment
         self.presentFontPicker = presentFontPicker
         self.toggleKeyboard = toggleKeyboard
@@ -346,9 +320,6 @@ final class TextSettingsComponent: CombinedComponent {
             return false
         }
         if lhs.style != rhs.style {
-            return false
-        }
-        if lhs.animation != rhs.animation {
             return false
         }
         if lhs.alignment != rhs.alignment {

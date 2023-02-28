@@ -14,19 +14,18 @@
     SMetaDisposable *_sizeClassDisposable;
     UIUserInterfaceSizeClass _sizeClass;
     
-    id<LegacyComponentsOverlayWindowManager> _manager;
-    bool _managedIsHidden;
+    id<LegacyComponentsContext> _context;
 }
 @end
 
 @implementation TGOverlayFormsheetWindow
 
-- (instancetype)initWithManager:(id<LegacyComponentsOverlayWindowManager>)manager parentController:(TGViewController *)parentController contentController:(UIViewController *)contentController
+- (instancetype)initWithContext:(id<LegacyComponentsContext>)context parentController:(TGViewController *)parentController contentController:(UIViewController *)contentController
 {
-    self = [super initWithFrame:[[manager context] fullscreenBounds]];
+    self = [super initWithFrame:[context fullscreenBounds]];
     if (self != nil)
     {
-        _manager = manager;
+        _context = context;
         self.windowLevel = parentController.view.window.windowLevel + 0.0001f;
         self.backgroundColor = [UIColor clearColor];
         
@@ -35,7 +34,8 @@
         
         _contentController = contentController;
         
-        [_manager bindController:_contentController];
+        if (iosMajorVersion() < 9)
+            [self createControllerIfNeeded];
     }
     return self;
 }
@@ -45,38 +45,88 @@
     [_sizeClassDisposable dispose];
 }
 
-- (BOOL)isHidden {
-    return _managedIsHidden;
+- (void)createControllerIfNeeded
+{
+    if (self.rootViewController != nil)
+        return;
+    
+    TGOverlayFormsheetController *controller = [[TGOverlayFormsheetController alloc] initWithContext:_context contentController:_contentController];
+    controller.formSheetWindow = self;
+    self.rootViewController = controller;
+    
+    _contentController = nil;
 }
 
-- (void)setHidden:(BOOL)hidden {
-    if ([_manager managesWindow]) {
-        if (![super isHidden]) {
-            [super setHidden:true];
+- (void)updateSizeClass:(UIUserInterfaceSizeClass)sizeClass animated:(bool)animated
+{
+    if (_sizeClass == sizeClass)
+        return;
+    
+    _sizeClass = sizeClass;
+    
+    if (sizeClass == UIUserInterfaceSizeClassCompact)
+    {
+        if ([self contentController].parentViewController != _parentController)
+        {
+            [[self contentController] removeFromParentViewController];
+            [[self.contentController view] removeFromSuperview];
+            
+            [_parentController presentViewController:[self contentController] animated:animated completion:nil];
+            self.hidden = true;
         }
-        
-        if (_managedIsHidden != hidden) {
-            _managedIsHidden = hidden;
-            [_manager setHidden:hidden window:self];
-        }
-    } else {
-        [super setHidden:hidden];
-        
-        if (!hidden) {
-            [[[LegacyComponentsGlobals provider] applicationWindows].firstObject endEditing:true];
+    }
+    else
+    {
+        if ([self controller] == nil || [self contentController].parentViewController != [self controller])
+        {
+            [self createControllerIfNeeded];
+            
+            [self.contentController.presentingViewController dismissViewControllerAnimated:false completion:^
+            {
+                [[self controller] setContentController:[self contentController]];
+                self.hidden = false;
+            }];
         }
     }
 }
 
 - (void)showAnimated:(bool)animated
 {
-    if ([self contentController].parentViewController != _parentController)
+    if (iosMajorVersion() >= 9)
     {
-        [[self contentController] removeFromParentViewController];
-        [[self.contentController view] removeFromSuperview];
+        UIUserInterfaceSizeClass sizeClass = [_context currentHorizontalSizeClass];
+
+        if (sizeClass == UIUserInterfaceSizeClassCompact)
+        {
+            [self updateSizeClass:sizeClass animated:true];
+        }
+        else
+        {
+            [self createControllerIfNeeded];
+            
+            self.hidden = false;
+            
+            if (animated)
+                [[self controller] animateInWithCompletion:nil];
+        }
         
-        [_parentController presentViewController:[self contentController] animated:animated completion:nil];
-        //self.hidden = true;
+        __weak TGOverlayFormsheetWindow *weakSelf = self;
+        _sizeClassDisposable = [[SMetaDisposable alloc] init];
+        [_sizeClassDisposable setDisposable:[[_context sizeClassSignal] startWithNext:^(NSNumber *next)
+        {
+            __strong TGOverlayFormsheetWindow *strongSelf = weakSelf;
+            if (strongSelf == nil)
+                return;
+            
+            [strongSelf updateSizeClass:next.integerValue animated:false];
+        }]];
+    }
+    else
+    {
+        self.hidden = false;
+        
+        if (animated)
+            [[self controller] animateInWithCompletion:nil];
     }
 }
 
@@ -84,8 +134,7 @@
 {
     TGViewController *parentController = _parentController;
     [parentController.associatedWindowStack removeObject:self];
-    [_manager setHidden:true window:self];
-    //self.hidden = true;
+    self.hidden = true;
 }
 
 - (void)dismissAnimated:(bool)animated

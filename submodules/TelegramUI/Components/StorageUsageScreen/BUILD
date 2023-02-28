@@ -26,7 +26,6 @@ swift_library(
         "//submodules/TelegramStringFormatting:TelegramStringFormatting",
         "//submodules/PresentationDataUtils:PresentationDataUtils",
         "//submodules/TelegramUI/Components/EmojiStatusComponent",
-        "//submodules/TelegramUI/Components/AnimatedTextComponent",
         "//submodules/CheckNode",
         "//submodules/Markdown",
         "//submodules/ContextUI",
@@ -39,9 +38,6 @@ swift_library(
         "//submodules/AnimatedStickerNode",
         "//submodules/TelegramAnimatedStickerNode",
         "//submodules/LegacyComponents",
-        "//submodules/GalleryData",
-        "//submodules/SegmentedControlNode",
-        "//submodules/TelegramUIPreferences",
     ],
     visibility = [
         "//visibility:public",

@@ -9,15 +9,14 @@ import StickerResources
 import AnimatedStickerNode
 import TelegramAnimatedStickerNode
 import ContextUI
-import AccountContext
 
 final class StickerPreviewPeekContent: PeekControllerContent {
-    let context: AccountContext
+    let account: Account
     let item: ImportStickerPack.Sticker
     let menu: [ContextMenuItem]
     
-    init(context: AccountContext, item: ImportStickerPack.Sticker, menu: [ContextMenuItem]) {
-        self.context = context
+    init(account: Account, item: ImportStickerPack.Sticker, menu: [ContextMenuItem]) {
+        self.account = account
         self.item = item
         self.menu = menu
     }
@@ -35,7 +34,7 @@ final class StickerPreviewPeekContent: PeekControllerContent {
     }
     
     func node() -> PeekControllerContentNode & ASDisplayNode {
-        return StickerPreviewPeekContentNode(account: self.context.account, item: self.item)
+        return StickerPreviewPeekContentNode(account: self.account, item: self.item)
     }
     
     func topAccessoryNode() -> ASDisplayNode? {

@@ -8,24 +8,18 @@ import TelegramCore
 import Postbox
 
 public final class EntityKeyboardTopContainerPanelEnvironment: Equatable {
-    let isContentInFocus: Bool
     let visibilityFractionUpdated: ActionSlot<(CGFloat, Transition)>
     let isExpandedUpdated: (Bool, Transition) -> Void
     
     init(
-        isContentInFocus: Bool,
         visibilityFractionUpdated: ActionSlot<(CGFloat, Transition)>,
         isExpandedUpdated: @escaping (Bool, Transition) -> Void
     ) {
-        self.isContentInFocus = isContentInFocus
         self.visibilityFractionUpdated = visibilityFractionUpdated
         self.isExpandedUpdated = isExpandedUpdated
     }
     
     public static func ==(lhs: EntityKeyboardTopContainerPanelEnvironment, rhs: EntityKeyboardTopContainerPanelEnvironment) -> Bool {
-        if lhs.isContentInFocus != rhs.isContentInFocus {
-            return false
-        }
         if lhs.visibilityFractionUpdated !== rhs.visibilityFractionUpdated {
             return false
         }
@@ -38,12 +32,12 @@ final class EntityKeyboardTopContainerPanelComponent: Component {
     
     let theme: PresentationTheme
     let overflowHeight: CGFloat
-    let displayBackground: EntityKeyboardComponent.DisplayTopPanelBackground
+    let displayBackground: Bool
     
     init(
         theme: PresentationTheme,
         overflowHeight: CGFloat,
-        displayBackground: EntityKeyboardComponent.DisplayTopPanelBackground
+        displayBackground: Bool
     ) {
         self.theme = theme
         self.overflowHeight = overflowHeight
@@ -152,7 +146,6 @@ final class EntityKeyboardTopContainerPanelComponent: Component {
                             component: panel.component,
                             environment: {
                                 EntityKeyboardTopContainerPanelEnvironment(
-                                    isContentInFocus: panelEnvironment.isContentInFocus,
                                     visibilityFractionUpdated: panelView.visibilityFractionUpdated,
                                     isExpandedUpdated: { [weak self] isExpanded, transition in
                                         guard let strongSelf = self else {
@@ -193,9 +186,7 @@ final class EntityKeyboardTopContainerPanelComponent: Component {
                 strongSelf.updateVisibilityFraction(value: fraction, transition: transition)
             }
             
-            if case .blur = component.displayBackground {
-                self.backgroundColor = nil
-                
+            if component.displayBackground {
                 let backgroundView: BlurredBackgroundView
                 if let current = self.backgroundView {
                     backgroundView = current
@@ -218,9 +209,7 @@ final class EntityKeyboardTopContainerPanelComponent: Component {
                 
                 backgroundSeparatorView.backgroundColor = component.theme.chat.inputPanel.panelSeparatorColor
                 transition.setFrame(view: backgroundSeparatorView, frame: CGRect(origin: CGPoint(x: 0.0, y: height), size: CGSize(width: availableSize.width, height: UIScreenPixel)))
-            } else if case .none = component.displayBackground {
-                self.backgroundColor = nil
-                
+            } else {
                 if let backgroundView = self.backgroundView {
                     self.backgroundView = nil
                     backgroundView.removeFromSuperview()
@@ -229,17 +218,6 @@ final class EntityKeyboardTopContainerPanelComponent: Component {
                     self.backgroundSeparatorView = nil
                     backgroundSeparatorView.removeFromSuperview()
                 }
-            } else if case .opaque = component.displayBackground {
-                if let backgroundView = self.backgroundView {
-                    self.backgroundView = nil
-                    backgroundView.removeFromSuperview()
-                }
-                if let backgroundSeparatorView = self.backgroundSeparatorView {
-                    self.backgroundSeparatorView = nil
-                    backgroundSeparatorView.removeFromSuperview()
-                }
-                
-                self.backgroundColor = component.theme.chat.inputMediaPanel.backgroundColor
             }
             
             return CGSize(width: availableSize.width, height: height)
