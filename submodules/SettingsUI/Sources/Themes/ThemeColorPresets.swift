@@ -32,7 +32,8 @@ var dayClassicColorPresets: [PresentationThemeAccentColor] = [
 ]
 
 var dayColorPresets: [PresentationThemeAccentColor] = [
-    PresentationThemeAccentColor(index: 101, baseColor: .preset, accentColor: 0x007aff, bubbleColors: [0x007aff, 0xff53f4], wallpaper: nil),
+//    0x007aff
+    PresentationThemeAccentColor(index: 101, baseColor: .preset, accentColor: 0x191970, bubbleColors: [0x191970, 0xff53f4], wallpaper: nil),
     PresentationThemeAccentColor(index: 102, baseColor: .preset, accentColor: 0x00b09b, bubbleColors: [0xaee946, 0x00b09b], wallpaper: nil),
     PresentationThemeAccentColor(index: 103, baseColor: .preset, accentColor: 0xd33213, bubbleColors: [0xf9db00, 0xd33213], wallpaper: nil),
     PresentationThemeAccentColor(index: 104, baseColor: .preset, accentColor: 0xea8ced, bubbleColors: [0xea8ced, 0x00c2ed], wallpaper: nil)

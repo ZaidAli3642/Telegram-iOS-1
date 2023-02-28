@@ -11,8 +11,8 @@ import SolidRoundedButtonNode
 import PresentationDataUtils
 import UIKitRuntimeUtils
 import ReplayKit
-
-private let accentColor: UIColor = UIColor(rgb: 0x007aff)
+//0x007aff
+private let accentColor: UIColor = UIColor(rgb: 0x191970)
 
 protocol PreviewVideoNode: ASDisplayNode {
     var ready: Signal<Bool, NoError> { get }

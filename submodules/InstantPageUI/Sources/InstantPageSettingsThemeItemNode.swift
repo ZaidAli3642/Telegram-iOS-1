@@ -100,8 +100,8 @@ final class InstantPageSettingsThemeItemNode: InstantPageSettingsItemNode {
             case .dark:
                 selectedIndex = 3
         }
-        
-        let selectionColor = UIColor(rgb: 0x007aff)
+//        0x007aff
+        let selectionColor = UIColor(rgb: 0x191970)
         self.themeNodes = [
             InstantPageSettingsThemeSelectorNode(color: .white, edgeColor: (selectedIndex == 1 || selectedIndex == 2) ? UIColor.lightGray : UIColor.white, selectionColor: selectionColor),
             InstantPageSettingsThemeSelectorNode(color: UIColor(rgb: 0xcbb98e), edgeColor: UIColor(rgb: 0xcbb98e), selectionColor: selectionColor),

@@ -75,6 +75,12 @@ func localizedCountryNamesAndCodes(strings: PresentationStrings) -> [((String, S
                 }
             }
             result.append(((englishCountryName, countryName), country.id, codes))
+<<<<<<< Updated upstream
+=======
+        } else {
+           // assertionFailure() This line is causing error. 
+            print("assertion failure")
+>>>>>>> Stashed changes
         }
     }
     return result

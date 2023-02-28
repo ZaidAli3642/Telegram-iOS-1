@@ -39,7 +39,8 @@ extension GColor {
                     self.init(hexString: "#34c759")
                     return
                 case "blue":
-                    self.init(hexString: "#007aff")
+//                #007aff
+                    self.init(hexString: "#191970")
                     return
                 case "golden":
                     self.init(hexString: "#ffcc00")
