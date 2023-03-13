@@ -26,13 +26,15 @@ private enum SubscriberAction: Equatable {
 private func titleAndColorForAction(_ action: SubscriberAction, theme: PresentationTheme, strings: PresentationStrings) -> (String, UIColor) {
     switch action {
         case .join:
-            return (strings.Channel_JoinChannel, theme.chat.inputPanel.panelControlAccentColor)
+        return ("test3", theme.chat.inputPanel.panelControlAccentColor)
+//            return (strings.Channel_JoinChannel, theme.chat.inputPanel.panelControlAccentColor)
         case .joinGroup:
             return (strings.Group_JoinGroup, theme.chat.inputPanel.panelControlAccentColor)
         case .applyToJoin:
             return (strings.Group_ApplyToJoin, theme.chat.inputPanel.panelControlAccentColor)
         case .kicked:
-            return (strings.Channel_JoinChannel, theme.chat.inputPanel.panelControlDisabledColor)
+            return ("test4", theme.chat.inputPanel.panelControlDisabledColor)
+//            return (strings.Channel_JoinChannel, theme.chat.inputPanel.panelControlDisabledColor)
         case .muteNotifications:
             return (strings.Conversation_Mute, theme.chat.inputPanel.panelControlAccentColor)
         case .unmuteNotifications:

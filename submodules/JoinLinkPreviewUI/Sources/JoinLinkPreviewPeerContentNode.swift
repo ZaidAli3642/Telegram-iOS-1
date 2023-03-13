@@ -113,7 +113,7 @@ final class JoinLinkPreviewPeerContentNode: ASDisplayNode, ShareContentContainer
                 self.moreNode = nil
             }
             
-            self.actionButtonNode.title = isGroup ? strings.Invitation_JoinGroup : strings.Channel_JoinChannel
+            self.actionButtonNode.title = isGroup ? strings.Invitation_JoinGroup : "test2"//strings.Channel_JoinChannel
         } else {
             self.peerNodes = []
             self.moreNode = nil

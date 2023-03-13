@@ -213,7 +213,8 @@ final class InstantPagePeerReferenceNode: ASDisplayNode, InstantPageNode {
             self.nameNode.attributedText = NSAttributedString(string: EnginePeer(peer).displayTitle(strings: self.strings, displayOrder: self.nameDisplayOrder), font: Font.medium(17.0), textColor: textColor)
         }
         let accentColor = self.transparent ? UIColor.white : self.theme.panelAccentColor
-        self.joinNode.setAttributedTitle(NSAttributedString(string: self.strings.Channel_JoinChannel, font: Font.medium(17.0), textColor: accentColor), for: [])
+        self.joinNode.setAttributedTitle(NSAttributedString(string: "test1", font: Font.medium(17.0), textColor: accentColor), for: [])
+//        self.joinNode.setAttributedTitle(NSAttributedString(string: self.strings.Channel_JoinChannel, font: Font.medium(17.0), textColor: accentColor), for: [])
         
         if themeUpdated {
             let secondaryColor = self.transparent ? UIColor.white : self.theme.panelSecondaryColor

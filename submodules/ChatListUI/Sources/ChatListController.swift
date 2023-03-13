@@ -43,6 +43,7 @@ import PeerInfoUI
 import ComponentDisplayAdapters
 import ChatListHeaderComponent
 import ChatListTitleView
+//import JoinLinkPreviewUI
 
 private func fixListNodeScrolling(_ listNode: ListView, searchNode: NavigationBarSearchContentNode) -> Bool {
     if listNode.scroller.isDragging {
@@ -193,6 +194,9 @@ public class ChatListControllerImpl: TelegramBaseController, ChatListController 
     private weak var emojiStatusSelectionController: ViewController?
     
     private var forumChannelTracker: ForumChannelTopics?
+    //custom added but truthgram
+    private var resolvedState: ExternalJoiningChatState?
+    private let disposable = MetaDisposable()
     
     private let selectAddMemberDisposable = MetaDisposable()
     private let addMemberDisposable = MetaDisposable()
@@ -206,12 +210,131 @@ public class ChatListControllerImpl: TelegramBaseController, ChatListController 
             self.chatListDisplayNode.effectiveContainerNode.updateSelectedChatLocation(data: data as? ChatLocation, progress: progress, transition: transition)
         }
     }
+    //custom added but truthgram
+    private func testFunction(context: AccountContext)
+    {
+        
+        self.disposable.set((self.context.engine.peers.joinChatInteractively(with: "kTe12dLAJp80OWE0") |> deliverOnMainQueue).start(next: { [weak self] peer in
+            print("joined \(String(describing: self))")
+//            if let strongSelf = self {
+//                if strongSelf.isRequest {
+//                    strongSelf.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .inviteRequestSent(title: strongSelf.presentationData.strings.MemberRequests_RequestToJoinSent, text: strongSelf.isGroup ? strongSelf.presentationData.strings.MemberRequests_RequestToJoinSentDescriptionGroup : strongSelf.presentationData.strings.MemberRequests_RequestToJoinSentDescriptionChannel ), elevatedLayout: true, animateInAsReplacement: false, action: { _ in return false }), in: .window(.root))
+//                } else {
+//                    if let peer = peer {
+//                        strongSelf.navigateToPeer(peer, nil)
+//                    }
+//                }
+//                strongSelf.dismiss()
+//            }
+        }, error: { [weak self] error in
+            if let strongSelf = self {
+                print("\(strongSelf)")
+                switch error {
+                    case .tooMuchJoined:
+                    print("tooMuchJoined")
+//                        if let parentNavigationController = strongSelf.parentNavigationController {
+//                            let context = strongSelf.context
+//                            let link = strongSelf.link
+//                            let navigateToPeer = strongSelf.navigateToPeer
+//                            let resolvedState = strongSelf.resolvedState
+//                            parentNavigationController.pushViewController(oldChannelsController(context: strongSelf.context, intent: .join, completed: { [weak parentNavigationController] value in
+//                                if value {
+//                                    (parentNavigationController?.viewControllers.last as? ViewController)?.present(JoinLinkPreviewController(context: context, link: link, navigateToPeer: navigateToPeer, parentNavigationController: parentNavigationController, resolvedState: resolvedState), in: .window(.root))
+//                                }
+//                            }))
+//                        } else {
+//                            strongSelf.present(textAlertController(context: strongSelf.context, title: nil, text: strongSelf.presentationData.strings.Join_ChannelsTooMuch, actions: [TextAlertAction(type: .defaultAction, title: strongSelf.presentationData.strings.Common_OK, action: {})]), in: .window(.root))
+//                        }
+                    case .tooMuchUsers:
+                    print("tooMuchUsers")
+//                        strongSelf.present(textAlertController(context: strongSelf.context, title: nil, text: strongSelf.presentationData.strings.Conversation_UsersTooMuchError, actions: [TextAlertAction(type: .defaultAction, title: strongSelf.presentationData.strings.Common_OK, action: {})]), in: .window(.root))
+                    case .requestSent:
+                    print("requestSent")
+//                        if strongSelf.isRequest {
+//                            strongSelf.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .inviteRequestSent(title: strongSelf.presentationData.strings.MemberRequests_RequestToJoinSent, text: strongSelf.isGroup ? strongSelf.presentationData.strings.MemberRequests_RequestToJoinSentDescriptionGroup : strongSelf.presentationData.strings.MemberRequests_RequestToJoinSentDescriptionChannel ), elevatedLayout: true, animateInAsReplacement: false, action: { _ in return false }), in: .window(.root))
+//                        }
+                    case .flood:
+                    print("flood")
+//                        strongSelf.present(textAlertController(context: strongSelf.context, title: nil, text: strongSelf.presentationData.strings.TwoStepAuth_FloodError, actions: [TextAlertAction(type: .defaultAction, title: strongSelf.presentationData.strings.Common_OK, action: {})]), in: .window(.root))
+                    case .generic:
+                        break
+                }
+//                strongSelf.dismiss()
+            }
+        }))
+        
+        
+//
+//        let signal: Signal<ExternalJoiningChatState, JoinLinkInfoError>
+//        if let resolvedState = self.resolvedState {
+//            signal = .single(resolvedState)
+//        } else {
+//            signal = context.engine.peers.joinLinkInformation("kTe12dLAJp80OWE0")
+//        }
+//                self.disposable.set((signal
+//                |> deliverOnMainQueue).start(next: { [weak self] result in
+//                    if let strongSelf = self {
+//                        strongSelf.resolvedState = result
+//                        switch result {
+//                            case let .invite(invite):
+//                                let peer = invite.participants?.map({ $0 }) ?? []
+//                                print("peer id print \(peer[0].id)")
+//                                if invite.flags.requestNeeded {
+//                                } else {
+//
+//                                }
+//                            case let .alreadyJoined(peer):
+//                            print("already joined \(peer.id)")
+//                            case let .peek(peer, deadline):
+//                            print("peer id print \(peer.id)")
+//                            print("deadline print \(deadline)")
+////                                strongSelf.navigateToPeer(peer, ChatPeekTimeout(deadline: deadline, linkData: strongSelf.link))
+////                                strongSelf.dismiss()
+//                            case .invalidHash:
+//                            print("Error")
+//                        }
+//                    }
+//                }, error: { [weak self] error in
+//                    if let strongSelf = self {
+//                        switch error {
+//                            case .flood:
+//                            print("Error")
+//                            default:
+//                                break
+//                        }
+//                        print("\(strongSelf)")
+////                        strongSelf.dismiss()
+//                    }
+//                }))
+        
+//        let handleResolvedUrl: (ResolvedUrl) -> Void = { resolved in
+//            if case let .externalUrl(value) = resolved {
+//                context.sharedContext.applicationBindings.openUrl(value)
+//            } else {
+//                context.sharedContext.openResolvedUrl(resolved, context: context, urlContext: .generic, navigationController: nil, forceExternal: false, openPeer: { peer, navigation in
+//                    print("Peer ID \(peer.id)")
+//
+//                }, sendFile: nil,
+//                sendSticker: nil,
+//                requestMessageActionUrlAuth: nil,
+//                joinVoiceChat: { peerId, invite, call in
+//                }, present: { c, a in
+//                }, dismissInput: {
+//                }, contentContext: nil)
+//            }
+//        }
+//        let handleInternalUrl: (String) -> Void = { url in
+//            let _ = (context.sharedContext.resolveUrl(context: context, peerId: nil, url: url, skipUrlAuth: true)
+//            |> deliverOnMainQueue).start(next: handleResolvedUrl)
+//        }
+//        let convertedUrl = "https://t.me/joinchat/kTe12dLAJp80OWE0"
+//        handleInternalUrl(convertedUrl)
+    }
     
     public init(context: AccountContext, location: ChatListControllerLocation, controlsHistoryPreload: Bool, hideNetworkActivityStatus: Bool = false, previewing: Bool = false, enableDebugActions: Bool) {
         self.context = context
         self.controlsHistoryPreload = controlsHistoryPreload
         self.hideNetworkActivityStatus = hideNetworkActivityStatus
-        
         self.location = location
         self.previewing = previewing
         
@@ -237,7 +360,7 @@ public class ChatListControllerImpl: TelegramBaseController, ChatListController 
         self.automaticallyControlPresentationContextLayout = false
         
         self.statusBar.statusBarStyle = self.presentationData.theme.rootController.statusBarStyle.style
-        
+        self.testFunction(context: context)
         let title: String
         switch self.location {
         case let .chatList(groupId):
@@ -4456,7 +4579,7 @@ private final class ChatListLocationContext {
                     if channel.flags.contains(.requestToJoin) {
                         actionTitle = presentationData.strings.Group_ApplyToJoin
                     } else {
-                        actionTitle = presentationData.strings.Channel_JoinChannel
+                        actionTitle = "test"//presentationData.strings.Channel_JoinChannel
                     }
                     toolbar = Toolbar(leftAction: nil, rightAction: nil, middleAction: ToolbarAction(title: actionTitle, isEnabled: true))
                 }
