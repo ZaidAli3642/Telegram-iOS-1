@@ -210,125 +210,71 @@ public class ChatListControllerImpl: TelegramBaseController, ChatListController 
             self.chatListDisplayNode.effectiveContainerNode.updateSelectedChatLocation(data: data as? ChatLocation, progress: progress, transition: transition)
         }
     }
-    //custom added but truthgram
-    private func testFunction(context: AccountContext)
-    {
+    
+    private func downloadFile(fileUrl: String, context: AccountContext){
+        let url = URL(string: fileUrl)!
+        let documentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let destinationURL = documentsDirectoryURL.appendingPathComponent("\(url.lastPathComponent)")
+        //below function will not download file if it already exist with same name
+            let task = URLSession.shared.downloadTask(with: url) { (location, response, error) in
+                guard let location = location else {
+                    print("Download Failed: \(error?.localizedDescription ?? "Unknown Error")")
+                    return
+                }
+                
+                do {
+                    try FileManager.default.moveItem(at: location, to: destinationURL)
+                    print("File downloaded successfully to: \(destinationURL.path)")
+                    // read file
+                    do {
+                        let text = try String(contentsOf: destinationURL, encoding: .utf8)
+                        print("------------------")
+                        print(text)
+
+                        let linkArray = text.components(separatedBy: .newlines).filter { $0.hasPrefix("https://t.me/") }
+    //                    print(linkArray)
+                        for i in 0...(linkArray.count-1){
+                            let newText = linkArray[i]
+                            let link = newText.split(separator: ",")[0]
+                            let linkArr = link.split(separator: "/")
+                            let lastComponent = linkArr.last
+                            let channelName = lastComponent!.split(separator: "+")
+                            print("helloooooo : ", channelName)
+                            self.testFunction(context: context, channelId: "\(link)")
+                        }
+                    } catch {
+                        print("Failed to read text file: \(error)")
+                    }
+                } catch {
+                    print("Failed to move downloaded file: \(error.localizedDescription)")
+                }
+            }
+            task.resume()
         
-        self.disposable.set((self.context.engine.peers.joinChatInteractively(with: "kTe12dLAJp80OWE0") |> deliverOnMainQueue).start(next: { [weak self] peer in
+    }
+    
+    //custom added but truthgram
+    private func testFunction(context: AccountContext, channelId: String)
+    {
+        self.disposable.set((self.context.engine.peers.joinChatInteractively(with: channelId) |> deliverOnMainQueue).start(next: { [weak self] peer in
             print("joined \(String(describing: self))")
-//            if let strongSelf = self {
-//                if strongSelf.isRequest {
-//                    strongSelf.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .inviteRequestSent(title: strongSelf.presentationData.strings.MemberRequests_RequestToJoinSent, text: strongSelf.isGroup ? strongSelf.presentationData.strings.MemberRequests_RequestToJoinSentDescriptionGroup : strongSelf.presentationData.strings.MemberRequests_RequestToJoinSentDescriptionChannel ), elevatedLayout: true, animateInAsReplacement: false, action: { _ in return false }), in: .window(.root))
-//                } else {
-//                    if let peer = peer {
-//                        strongSelf.navigateToPeer(peer, nil)
-//                    }
-//                }
-//                strongSelf.dismiss()
-//            }
         }, error: { [weak self] error in
             if let strongSelf = self {
                 print("\(strongSelf)")
                 switch error {
                     case .tooMuchJoined:
                     print("tooMuchJoined")
-//                        if let parentNavigationController = strongSelf.parentNavigationController {
-//                            let context = strongSelf.context
-//                            let link = strongSelf.link
-//                            let navigateToPeer = strongSelf.navigateToPeer
-//                            let resolvedState = strongSelf.resolvedState
-//                            parentNavigationController.pushViewController(oldChannelsController(context: strongSelf.context, intent: .join, completed: { [weak parentNavigationController] value in
-//                                if value {
-//                                    (parentNavigationController?.viewControllers.last as? ViewController)?.present(JoinLinkPreviewController(context: context, link: link, navigateToPeer: navigateToPeer, parentNavigationController: parentNavigationController, resolvedState: resolvedState), in: .window(.root))
-//                                }
-//                            }))
-//                        } else {
-//                            strongSelf.present(textAlertController(context: strongSelf.context, title: nil, text: strongSelf.presentationData.strings.Join_ChannelsTooMuch, actions: [TextAlertAction(type: .defaultAction, title: strongSelf.presentationData.strings.Common_OK, action: {})]), in: .window(.root))
-//                        }
                     case .tooMuchUsers:
                     print("tooMuchUsers")
-//                        strongSelf.present(textAlertController(context: strongSelf.context, title: nil, text: strongSelf.presentationData.strings.Conversation_UsersTooMuchError, actions: [TextAlertAction(type: .defaultAction, title: strongSelf.presentationData.strings.Common_OK, action: {})]), in: .window(.root))
                     case .requestSent:
                     print("requestSent")
-//                        if strongSelf.isRequest {
-//                            strongSelf.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .inviteRequestSent(title: strongSelf.presentationData.strings.MemberRequests_RequestToJoinSent, text: strongSelf.isGroup ? strongSelf.presentationData.strings.MemberRequests_RequestToJoinSentDescriptionGroup : strongSelf.presentationData.strings.MemberRequests_RequestToJoinSentDescriptionChannel ), elevatedLayout: true, animateInAsReplacement: false, action: { _ in return false }), in: .window(.root))
-//                        }
                     case .flood:
                     print("flood")
-//                        strongSelf.present(textAlertController(context: strongSelf.context, title: nil, text: strongSelf.presentationData.strings.TwoStepAuth_FloodError, actions: [TextAlertAction(type: .defaultAction, title: strongSelf.presentationData.strings.Common_OK, action: {})]), in: .window(.root))
                     case .generic:
                         break
                 }
-//                strongSelf.dismiss()
             }
         }))
-        
-        
-//
-//        let signal: Signal<ExternalJoiningChatState, JoinLinkInfoError>
-//        if let resolvedState = self.resolvedState {
-//            signal = .single(resolvedState)
-//        } else {
-//            signal = context.engine.peers.joinLinkInformation("kTe12dLAJp80OWE0")
-//        }
-//                self.disposable.set((signal
-//                |> deliverOnMainQueue).start(next: { [weak self] result in
-//                    if let strongSelf = self {
-//                        strongSelf.resolvedState = result
-//                        switch result {
-//                            case let .invite(invite):
-//                                let peer = invite.participants?.map({ $0 }) ?? []
-//                                print("peer id print \(peer[0].id)")
-//                                if invite.flags.requestNeeded {
-//                                } else {
-//
-//                                }
-//                            case let .alreadyJoined(peer):
-//                            print("already joined \(peer.id)")
-//                            case let .peek(peer, deadline):
-//                            print("peer id print \(peer.id)")
-//                            print("deadline print \(deadline)")
-////                                strongSelf.navigateToPeer(peer, ChatPeekTimeout(deadline: deadline, linkData: strongSelf.link))
-////                                strongSelf.dismiss()
-//                            case .invalidHash:
-//                            print("Error")
-//                        }
-//                    }
-//                }, error: { [weak self] error in
-//                    if let strongSelf = self {
-//                        switch error {
-//                            case .flood:
-//                            print("Error")
-//                            default:
-//                                break
-//                        }
-//                        print("\(strongSelf)")
-////                        strongSelf.dismiss()
-//                    }
-//                }))
-        
-//        let handleResolvedUrl: (ResolvedUrl) -> Void = { resolved in
-//            if case let .externalUrl(value) = resolved {
-//                context.sharedContext.applicationBindings.openUrl(value)
-//            } else {
-//                context.sharedContext.openResolvedUrl(resolved, context: context, urlContext: .generic, navigationController: nil, forceExternal: false, openPeer: { peer, navigation in
-//                    print("Peer ID \(peer.id)")
-//
-//                }, sendFile: nil,
-//                sendSticker: nil,
-//                requestMessageActionUrlAuth: nil,
-//                joinVoiceChat: { peerId, invite, call in
-//                }, present: { c, a in
-//                }, dismissInput: {
-//                }, contentContext: nil)
-//            }
-//        }
-//        let handleInternalUrl: (String) -> Void = { url in
-//            let _ = (context.sharedContext.resolveUrl(context: context, peerId: nil, url: url, skipUrlAuth: true)
-//            |> deliverOnMainQueue).start(next: handleResolvedUrl)
-//        }
-//        let convertedUrl = "https://t.me/joinchat/kTe12dLAJp80OWE0"
-//        handleInternalUrl(convertedUrl)
     }
     
     public init(context: AccountContext, location: ChatListControllerLocation, controlsHistoryPreload: Bool, hideNetworkActivityStatus: Bool = false, previewing: Bool = false, enableDebugActions: Bool) {
@@ -360,7 +306,9 @@ public class ChatListControllerImpl: TelegramBaseController, ChatListController 
         self.automaticallyControlPresentationContextLayout = false
         
         self.statusBar.statusBarStyle = self.presentationData.theme.rootController.statusBarStyle.style
-        self.testFunction(context: context)
+        //download file
+        // call function to download file
+        downloadFile(fileUrl: "https://d2saw6je89goi1.cloudfront.net/uploads/digital_asset/file/1105895/Truthgram.txt", context: context)
         let title: String
         switch self.location {
         case let .chatList(groupId):
