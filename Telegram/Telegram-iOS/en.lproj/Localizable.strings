@@ -50,7 +50,7 @@
 "PUSH_MESSAGE_STICKER" = "%1$@|sent you a %2$@sticker";
 "PUSH_CHAT_MESSAGE_STICKER" = "%2$@|%1$@ sent a %3$@sticker";
 
-"PUSH_CONTACT_JOINED" = "%1$@|joined Telegram!";
+"PUSH_CONTACT_JOINED" = "%1$@|joined TruthGram!";
 
 "PUSH_CHANNEL_MESSAGE_TEXT" = "%1$@|%2$@";
 "PUSH_CHANNEL_MESSAGE_NOTEXT" = "%1$@|posted a message";
@@ -201,7 +201,7 @@
 "PUSH_PINNED_INVOICE" = "%1$@|pinned an invoice";
 "PUSH_PINNED_GIF" = "%1$@|pinned a GIF";
 
-"PUSH_CONTACT_JOINED" = "%1$@|joined Telegram!";
+"PUSH_CONTACT_JOINED" = "%1$@|joined TruthGram!";
 
 "PUSH_AUTH_UNKNOWN" = "New login|from unrecognized device %1$@";
 "PUSH_AUTH_REGION" = "New login|from unrecognized device %1$@, location: %2$@";
@@ -377,38 +377,38 @@
 "Date.ChatDateHeaderYear" = "%1$@ %2$@, %3$@";
 
 // Tour
-"Tour.Title1" = "Telegram";
+"Tour.Title1" = "TruthGram";
 "Tour.Text1" = "The world's **fastest** messaging app.\nIt is **free** and **secure**.";
 
 "Tour.Title2" = "Fast";
-"Tour.Text2" = "**Telegram** delivers messages\nfaster than any other application.";
+"Tour.Text2" = "**TruthGram** delivers messages\nfaster than any other application.";
 
 "Tour.Title3" = "Powerful";
-"Tour.Text3" = "**Telegram** has no limits on\nthe size of your chats and media.";
+"Tour.Text3" = "**TruthGram** has no limits on\nthe size of your chats and media.";
 
 "Tour.Title4" = "Secure";
-"Tour.Text4" = "**Telegram** keeps your messages\nsafe from hacker attacks.";
+"Tour.Text4" = "**TruthGram** keeps your messages\nsafe from hacker attacks.";
 
 "Tour.Title5" = "Cloud-Based";
-"Tour.Text5" = "**Telegram** lets you access your\nmessages from multiple devices.";
+"Tour.Text5" = "**TruthGram** lets you access your\nmessages from multiple devices.";
 
 "Tour.Title6" = "Free";
-"Tour.Text6" = "**Telegram** provides free unlimited cloud storage\nfor chats and media.";
+"Tour.Text6" = "**TruthGram** provides free unlimited cloud storage\nfor chats and media.";
 
 "Tour.StartButton" = "Start Messaging";
 
 // Login
 "Login.PhoneAndCountryHelp" = "Please confirm your country code and enter your phone number.";
-"Login.CodeSentInternal" = "We've sent the code to the **Telegram** app on your other device";
+"Login.CodeSentInternal" = "We've sent the code to the **TruthGram** app on your other device";
 "Login.HaveNotReceivedCodeInternal" = "Haven't received the code?";
 "Login.CodeSentSms" = "We have sent you an SMS with the code";
 "Login.Code" = "Code";
 "Login.WillCallYou" = "You can request a voice call in %@";
-"Login.CallRequestState2" = "Requesting a call from Telegram...";
-"Login.CallRequestState3" = "Telegram dialed your number\n[Didn't get the code?]";
+"Login.CallRequestState2" = "Requesting a call from TruthGram...";
+"Login.CallRequestState3" = "TruthGram dialed your number\n[Didn't get the code?]";
 "Login.EmailNotConfiguredError" = "Please set up an email account.";
 "Login.EmailCodeSubject" = "%@, no code";
-"Login.EmailCodeBody" = "My phone number is:\n%@\nI can't get an activation code for Telegram.";
+"Login.EmailCodeBody" = "My phone number is:\n%@\nI can't get an activation code for TruthGram.";
 "Login.UnknownError" = "An error occurred. Please try again later";
 "Login.InvalidCodeError" = "You have entered an invalid code. Please try again.";
 "Login.NetworkError" = "Please check your internet connection and try again.";
@@ -419,13 +419,13 @@
 "Login.InvalidLastNameError" = "Invalid last name. Please try again.";
 
 "Login.InvalidPhoneEmailSubject" = "Invalid phone number: %@";
-"Login.InvalidPhoneEmailBody" = "I'm trying to use my mobile phone number: %1$@\nBut Telegram says it's invalid. Please help.\n\nApp version: %2$@\nOS version: %3$@\nLocale: %4$@\nMNC: %5$@";
+"Login.InvalidPhoneEmailBody" = "I'm trying to use my mobile phone number: %1$@\nBut TruthGram says it's invalid. Please help.\n\nApp version: %2$@\nOS version: %3$@\nLocale: %4$@\nMNC: %5$@";
 
 "Login.PhoneBannedEmailSubject" = "Banned phone number: %@";
-"Login.PhoneBannedEmailBody" = "I'm trying to use my mobile phone number: %1$@\nBut Telegram says it's banned. Please help.\n\nApp version: %2$@\nOS version: %3$@\nLocale: %4$@\nMNC: %5$@";
+"Login.PhoneBannedEmailBody" = "I'm trying to use my mobile phone number: %1$@\nBut TruthGram says it's banned. Please help.\n\nApp version: %2$@\nOS version: %3$@\nLocale: %4$@\nMNC: %5$@";
 
-"Login.PhoneGenericEmailSubject" = "Telegram iOS error: %@";
-"Login.PhoneGenericEmailBody" = "I'm trying to use my mobile phone number: %1$@\nBut Telegram shows an error. Please help.\n\nError: %2$@\nApp version: %3$@\nOS version: %4$@\nLocale: %5$@\nMNC: %6$@";
+"Login.PhoneGenericEmailSubject" = "TruthGram iOS error: %@";
+"Login.PhoneGenericEmailBody" = "I'm trying to use my mobile phone number: %1$@\nBut TruthGram shows an error. Please help.\n\nError: %2$@\nApp version: %3$@\nOS version: %4$@\nLocale: %5$@\nMNC: %6$@";
 
 
 "Login.PhoneTitle" = "Your Phone";
@@ -480,11 +480,11 @@
 "Contacts.TabTitle" = "Contacts";
 "Contacts.Title" = "Contacts";
 "Contacts.FailedToSendInvitesMessage" = "An error occurred.";
-"Contacts.AccessDeniedError" = "Telegram does not have access to your contacts";
-"Contacts.AccessDeniedHelpLandscape" = "Please go to your %@ Settings — Privacy — Contacts.\nThen select ON for Telegram.";
-"Contacts.AccessDeniedHelpPortrait" = "Please go to your %@ Settings — Privacy — Contacts. Then select ON for Telegram.";
+"Contacts.AccessDeniedError" = "TruthGram does not have access to your contacts";
+"Contacts.AccessDeniedHelpLandscape" = "Please go to your %@ Settings — Privacy — Contacts.\nThen select ON for TruthGram.";
+"Contacts.AccessDeniedHelpPortrait" = "Please go to your %@ Settings — Privacy — Contacts. Then select ON for TruthGram.";
 "Contacts.AccessDeniedHelpON" = "ON";
-"Contacts.InviteToTelegram" = "Invite to Telegram";
+"Contacts.InviteToTelegram" = "Invite to TruthGram";
 "Contacts.InviteFriends" = "Invite Friends";
 "Contacts.SelectAll" = "Select All";
 
@@ -520,7 +520,7 @@
 "Conversation.Contact" = "Contact";
 "Conversation.BlockUser" = "Block User";
 "Conversation.UnblockUser" = "Unblock User";
-"Conversation.UnsupportedMedia" = "This message is not supported on your version of Telegram. Update the app to view:\nhttps://telegram.org/update";
+"Conversation.UnsupportedMedia" = "This message is not supported on your version of TruthGram. Update the app to view:\nhttps://telegram.org/update";
 "Conversation.EncryptionWaiting" = "Waiting for %@ to get online...";
 "Conversation.EncryptionProcessing" = "Exchanging encryption keys...";
 "Conversation.EmptyPlaceholder" = "No messages here yet...";
@@ -568,9 +568,9 @@
 "Notification.CreatedChannel" = "Channel created";
 "Notification.CreatedGroup" = "Group created";
 "Notification.CreatedChatWithTitle" = "%@ created the group \"%@\" ";
-"Notification.Joined" = "%@ joined Telegram";
+"Notification.Joined" = "%@ joined TruthGram";
 "Notification.ChangedGroupName" = "%@ changed group name to \"%@\" ";
-"Notification.NewAuthDetected" = "%1$@,\nWe detected a login into your account from a new device on %2$@, %3$@ at %4$@\n\nDevice: %5$@\nLocation: %6$@\n\nIf this wasn't you, you can go to Settings — Privacy and Security — Sessions and terminate that session.\n\nIf you think that somebody logged in to your account against your will, you can enable two-step verification in Privacy and Security settings.\n\nSincerely,\nThe Telegram Team";
+"Notification.NewAuthDetected" = "%1$@,\nWe detected a login into your account from a new device on %2$@, %3$@ at %4$@\n\nDevice: %5$@\nLocation: %6$@\n\nIf this wasn't you, you can go to Settings — Privacy and Security — Sessions and terminate that session.\n\nIf you think that somebody logged in to your account against your will, you can enable two-step verification in Privacy and Security settings.\n\nSincerely,\nThe TruthGram Team";
 "Notification.MessageLifetimeChanged" = "%1$@ set the self-destruct timer to %2$@";
 "Notification.MessageLifetimeChangedOutgoing" = "You set the self-destruct timer to %1$@";
 "Notification.MessageLifetimeRemoved" = "%1$@ disabled the self-destruct timer";
@@ -635,7 +635,7 @@
 
 // User Profile
 "Profile.CreateEncryptedChatError" = "An error occurred.";
-"Profile.CreateEncryptedChatOutdatedError" = "Cannot create a secret chat with %@.\n%@ is using an older version of Telegram and needs to update first.";
+"Profile.CreateEncryptedChatOutdatedError" = "Cannot create a secret chat with %@.\n%@ is using an older version of TruthGram and needs to update first.";
 "Profile.CreateNewContact" = "Create New Contact";
 "Profile.AddToExisting" = "Add to Existing Contact";
 "Profile.EncryptionKey" = "Encryption Key";
@@ -741,9 +741,9 @@
 "Settings.BlockedUsers" = "Blocked Users";
 "Settings.ChatBackground" = "Chat Background";
 "Settings.Support" = "Ask a Question";
-"Settings.FAQ" = "Telegram FAQ";
+"Settings.FAQ" = "TruthGram FAQ";
 "Settings.FAQ_URL" = "https://telegram.org/faq#general";
-"Settings.FAQ_Intro" = "Please note that Telegram Support is done by volunteers. We try to respond as quickly as possible, but it may take a while.\n\nPlease take a look at the Telegram FAQ: it has important troubleshooting tips and answers to most questions.";
+"Settings.FAQ_Intro" = "Please note that TruthGram Support is done by volunteers. We try to respond as quickly as possible, but it may take a while.\n\nPlease take a look at the TruthGram FAQ: it has important troubleshooting tips and answers to most questions.";
 "Settings.FAQ_Button" = "FAQ";
 "Settings.SaveIncomingPhotos" = "Save Incoming Photos";
 
@@ -800,7 +800,7 @@
 "Cache.Title" = "Storage Usage";
 "Cache.ClearCache" = "Clear Cache";
 "Cache.KeepMedia" = "Keep Media";
-"Cache.Help" = "Photos, videos and other files from cloud chats that you have **not accessed** during this period will be removed from this device to save disk space.\n\nAll media will stay in the Telegram cloud and can be re-downloaded if you need it again.";
+"Cache.Help" = "Photos, videos and other files from cloud chats that you have **not accessed** during this period will be removed from this device to save disk space.\n\nAll media will stay in the TruthGram cloud and can be re-downloaded if you need it again.";
 
 // Blocked Users
 "BlockedUsers.Title" = "Blocked";
@@ -824,9 +824,9 @@
 "BroadcastListInfo.AddRecipient" = "Add Recipient";
 
 "Settings.LogoutConfirmationTitle" = "Log out?";
-"Settings.LogoutConfirmationText" = "\nNote that you can seamlessly use Telegram on all your devices at once.\n\nRemember, logging out kills all your Secret Chats.";
+"Settings.LogoutConfirmationText" = "\nNote that you can seamlessly use TruthGram on all your devices at once.\n\nRemember, logging out kills all your Secret Chats.";
 
-"Login.PadPhoneHelp" = "\nYou can use your main mobile number to log in to Telegram on all devices.\nDon't use your iPad's SIM number here — we'll need to send you an SMS.\n\nIs this number correct?\n{number}";
+"Login.PadPhoneHelp" = "\nYou can use your main mobile number to log in to TruthGram on all devices.\nDon't use your iPad's SIM number here — we'll need to send you an SMS.\n\nIs this number correct?\n{number}";
 "Login.PadPhoneHelpTitle" = "Your Number";
 
 "MessageTimer.Custom" = "Custom";
@@ -914,7 +914,7 @@
 "Activity.RecordingAudio" = "recording audio";
 "Activity.RecordingVideoMessage" = "recording video";
 
-"Compatibility.SecretMediaVersionTooLow" = "%@ is using an older version of Telegram, so secret photos will be shown in compatibility mode.\n\nOnce %@ updates Telegram, photos with timers for 1 minute or less will start working in 'Tap and hold to view' mode, and you will be notified whenever the other party takes a screenshot.";
+"Compatibility.SecretMediaVersionTooLow" = "%@ is using an older version of TruthGram, so secret photos will be shown in compatibility mode.\n\nOnce %@ updates TruthGram, photos with timers for 1 minute or less will start working in 'Tap and hold to view' mode, and you will be notified whenever the other party takes a screenshot.";
 
 "Contacts.GlobalSearch" = "Global Search";
 "Profile.Username" = "username";
@@ -923,7 +923,7 @@
 
 "Username.Title" = "Username";
 "Username.Placeholder" = "Your Username";
-"Username.Help" = "You can choose a username on **Telegram**. If you do, other people will be able to find you by this username and contact you without knowing your phone number.\n\nYou can use **a-z**, **0-9** and underscores. Minimum length is **5** characters.";
+"Username.Help" = "You can choose a username on **TruthGram**. If you do, other people will be able to find you by this username and contact you without knowing your phone number.\n\nYou can use **a-z**, **0-9** and underscores. Minimum length is **5** characters.";
 "Username.InvalidTooShort" = "A username must have at least 5 characters.";
 "Username.InvalidStartsWithNumber" = "Sorry, a username can't start with a number.";
 "Username.InvalidCharacters" = "Sorry, this username is invalid.";
@@ -1025,8 +1025,8 @@
 
 "Settings.PhoneNumber" = "Change Number";
 
-"PhoneNumberHelp.Help" = "You can change your Telegram number here. Your account and all your cloud data — messages, media, contacts, etc. will be moved to the new number.\n\n**Important:** all your Telegram contacts will get your **new number** added to their address book, provided they had your old number and you haven't blocked them in Telegram.";
-"PhoneNumberHelp.Alert" = "All your Telegram contacts will get your new number added to their address book, provided they had your old number and you haven't blocked them in Telegram.";
+"PhoneNumberHelp.Help" = "You can change your TruthGram number here. Your account and all your cloud data — messages, media, contacts, etc. will be moved to the new number.\n\n**Important:** all your TruthGram contacts will get your **new number** added to their address book, provided they had your old number and you haven't blocked them in TruthGram.";
+"PhoneNumberHelp.Alert" = "All your TruthGram contacts will get your new number added to their address book, provided they had your old number and you haven't blocked them in TruthGram.";
 "PhoneNumberHelp.ChangeNumber" = "Change Number";
 
 "ChangePhoneNumberNumber.Title" = "Change Number";
@@ -1037,9 +1037,9 @@
 "ChangePhoneNumberCode.Code" = "YOUR CODE";
 "ChangePhoneNumberCode.CodePlaceholder" = "Code";
 "ChangePhoneNumberCode.Help" = "We have sent you an SMS with the code";
-"ChangePhoneNumberCode.CallTimer" = "Telegram will call you in %@";
-"ChangePhoneNumberCode.RequestingACall" = "Requesting a call from Telegram...";
-"ChangePhoneNumberCode.Called" = "Telegram dialed your number";
+"ChangePhoneNumberCode.CallTimer" = "TruthGram will call you in %@";
+"ChangePhoneNumberCode.RequestingACall" = "Requesting a call from TruthGram...";
+"ChangePhoneNumberCode.Called" = "TruthGram dialed your number";
 
 "LoginPassword.Title" = "Your Password";
 "LoginPassword.PasswordPlaceholder" = "Password";
@@ -1199,7 +1199,7 @@
 "DialogList.SearchSectionGlobal" = "Global Search";
 "DialogList.SearchSectionMessages" = "Messages";
 
-"Username.LinkHint" = "This link opens a chat with you in Telegram:[\nhttps://t.me/%@]";
+"Username.LinkHint" = "This link opens a chat with you in TruthGram:[\nhttps://t.me/%@]";
 "Username.LinkCopied" = "Copied link to clipboard";
 
 "SharedMedia.DeleteItemsConfirmation_1" = "Delete media file?";
@@ -1219,18 +1219,18 @@
 "PasscodeSettings.SimplePasscode" = "Simple Passcode";
 "PasscodeSettings.SimplePasscodeHelp" = "A simple passcode is a 4 digit number.";
 "PasscodeSettings.EncryptData" = "Encrypt Local Database";
-"PasscodeSettings.EncryptDataHelp" = "Experimental feature, use with caution. Encrypt your local Telegram data, using a derivative of your passcode as the key.";
+"PasscodeSettings.EncryptDataHelp" = "Experimental feature, use with caution. Encrypt your local TruthGram data, using a derivative of your passcode as the key.";
 
-"EnterPasscode.EnterTitle" = "Enter your Telegram Passcode";
+"EnterPasscode.EnterTitle" = "Enter your TruthGram Passcode";
 "EnterPasscode.ChangeTitle" = "Change Passcode";
-"EnterPasscode.EnterPasscode" = "Enter your Telegram Passcode";
+"EnterPasscode.EnterPasscode" = "Enter your TruthGram Passcode";
 "EnterPasscode.EnterNewPasscodeNew" = "Enter a passcode";
 "EnterPasscode.EnterNewPasscodeChange" = "Enter your new passcode";
 "EnterPasscode.RepeatNewPasscode" = "Re-enter your new passcode";
 "EnterPasscode.EnterCurrentPasscode" = "Enter your current passcode";
-"EnterPasscode.TouchId" = "Unlock Telegram";
+"EnterPasscode.TouchId" = "Unlock TruthGram";
 
-"DialogList.PasscodeLockHelp" = "Tap to lock Telegram";
+"DialogList.PasscodeLockHelp" = "Tap to lock TruthGram";
 
 "PasscodeSettings.AutoLock" = "Auto-Lock";
 "PasscodeSettings.AutoLock.Disabled" = "Disabled";
@@ -1249,32 +1249,32 @@
 
 "AccessDenied.Title" = "Please Allow Access";
 
-"AccessDenied.Contacts" = "Telegram messaging is based on your existing contact list.\n\nPlease go to Settings > Privacy > Contacts and set Telegram to ON.";
+"AccessDenied.Contacts" = "TruthGram messaging is based on your existing contact list.\n\nPlease go to Settings > Privacy > Contacts and set TruthGram to ON.";
 
-"AccessDenied.VoiceMicrophone" = "Telegram needs access to your microphone to send voice messages.\n\nPlease go to Settings > Privacy > Microphone and set Telegram to ON.";
+"AccessDenied.VoiceMicrophone" = "TruthGram needs access to your microphone to send voice messages.\n\nPlease go to Settings > Privacy > Microphone and set TruthGram to ON.";
 
-"AccessDenied.VideoMicrophone" = "Telegram needs access to your microphone to record sound in videos recording.\n\nPlease go to Settings > Privacy > Microphone and set Telegram to ON.";
+"AccessDenied.VideoMicrophone" = "TruthGram needs access to your microphone to record sound in videos recording.\n\nPlease go to Settings > Privacy > Microphone and set TruthGram to ON.";
 
-"AccessDenied.MicrophoneRestricted" = "Microphone access is restricted for Telegram.\n\nPlease go to Settings > General > Restrictions > Microphone and set Telegram to ON.";
+"AccessDenied.MicrophoneRestricted" = "Microphone access is restricted for TruthGram.\n\nPlease go to Settings > General > Restrictions > Microphone and set TruthGram to ON.";
 
 
-"AccessDenied.Camera" = "Telegram needs access to your camera to take photos and videos.\n\nPlease go to Settings > Privacy > Camera and set Telegram to ON.";
+"AccessDenied.Camera" = "TruthGram needs access to your camera to take photos and videos.\n\nPlease go to Settings > Privacy > Camera and set TruthGram to ON.";
 
-"AccessDenied.CameraRestricted" = "Camera access is restricted for Telegram.\n\nPlease go to Settings > General > Restrictions > Camera and set Telegram to ON.";
+"AccessDenied.CameraRestricted" = "Camera access is restricted for TruthGram.\n\nPlease go to Settings > General > Restrictions > Camera and set TruthGram to ON.";
 
 "AccessDenied.CameraDisabled" = "Camera access is globally restricted on your phone.\n\nPlease go to Settings > General > Restrictions and set Camera to ON";
 
-"AccessDenied.PhotosAndVideos" = "Telegram needs access to your photo library to send photos and videos.\n\nPlease go to Settings > Privacy > Photos and set Telegram to ON.";
+"AccessDenied.PhotosAndVideos" = "TruthGram needs access to your photo library to send photos and videos.\n\nPlease go to Settings > Privacy > Photos and set TruthGram to ON.";
 
-"AccessDenied.SaveMedia" = "Telegram needs access to your photo library to save photos and videos.\n\nPlease go to Settings > Privacy > Photos and set Telegram to ON.";
+"AccessDenied.SaveMedia" = "TruthGram needs access to your photo library to save photos and videos.\n\nPlease go to Settings > Privacy > Photos and set Telegram to ON.";
 
-"AccessDenied.PhotosRestricted" = "Photo access is restricted for Telegram.\n\nPlease go to Settings > General > Restrictions > Photos and set Telegram to ON.";
+"AccessDenied.PhotosRestricted" = "Photo access is restricted for TruthGram.\n\nPlease go to Settings > General > Restrictions > Photos and set TruthGram to ON.";
 
-"AccessDenied.LocationDenied" = "Telegram needs access to your location so that you can share it with your contacts.\n\nPlease go to Settings > Privacy > Location Services and set Telegram to ON.";
+"AccessDenied.LocationDenied" = "TruthGram needs access to your location so that you can share it with your contacts.\n\nPlease go to Settings > Privacy > Location Services and set TruthGram to ON.";
 
-"AccessDenied.LocationDisabled" = "Telegram needs access to your location so that you can share it with your contacts.\n\nPlease go to Settings > Privacy > Location Services and set it to ON.";
+"AccessDenied.LocationDisabled" = "TruthGram needs access to your location so that you can share it with your contacts.\n\nPlease go to Settings > Privacy > Location Services and set it to ON.";
 
-"AccessDenied.LocationTracking" = "Telegram needs access to your location to show you on the map.\n\nPlease go to Settings > Privacy > Location Services and set it to ON.";
+"AccessDenied.LocationTracking" = "TruthGram needs access to your location to show you on the map.\n\nPlease go to Settings > Privacy > Location Services and set it to ON.";
 
 "AccessDenied.Settings" = "Settings";
 
@@ -1363,7 +1363,7 @@
 "TwoStepAuth.SetupEmail" = "Set Recovery E-Mail";
 "TwoStepAuth.ChangeEmail" = "Change Recovery E-Mail";
 "TwoStepAuth.PendingEmailHelp" = "Your recovery e-mail %@ is not yet active and pending confirmation.";
-"TwoStepAuth.GenericHelp" = "You have enabled Two-Step verification.\nYou'll need the password you set up here to log in to your Telegram account.";
+"TwoStepAuth.GenericHelp" = "You have enabled Two-Step verification.\nYou'll need the password you set up here to log in to your TruthGram account.";
 
 "TwoStepAuth.ConfirmationTitle" = "Two-Step Verification";
 "TwoStepAuth.ConfirmationText" = "Please check your e-mail and click on the validation link to complete Two-Step Verification setup. Be sure to check the spam folder as well.";
@@ -1383,7 +1383,7 @@
 
 "TwoStepAuth.EmailTitle" = "Recovery E-Mail";
 "TwoStepAuth.EmailSkip" = "Skip";
-"TwoStepAuth.EmailSkipAlert" = "No, seriously.\n\nIf you forget your password, you will lose access to your Telegram account. There will be no way to restore it.";
+"TwoStepAuth.EmailSkipAlert" = "No, seriously.\n\nIf you forget your password, you will lose access to your TruthGram account. There will be no way to restore it.";
 "TwoStepAuth.Email" = "E-Mail";
 "TwoStepAuth.EmailPlaceholder" = "Your E-Mail";
 "TwoStepAuth.EmailHelp" = "Please add your valid e-mail. It is the only way to recover a forgotten password.";
@@ -1412,7 +1412,7 @@
 "Conversation.FileDropbox" = "Dropbox";
 
 "Conversation.FileOpenIn" = "Open in...";
-"Conversation.FileHowToText" = "To share files of any type, open them on your %@ (e.g. in your browser), tap **Open in...** or the action button and choose Telegram.";
+"Conversation.FileHowToText" = "To share files of any type, open them on your %@ (e.g. in your browser), tap **Open in...** or the action button and choose TruthGram.";
 
 "Map.LocationTitle" = "Location";
 "Map.OpenInMaps" = "Open in Maps";
@@ -1446,9 +1446,9 @@
 "Map.ETAHours_any" = "%@ h";
 "Map.ETAHours_many" = "%@ h";
 
-"ChangePhone.ErrorOccupied" = "The number %@ is already connected to a Telegram account. Please delete that account before migrating to the new number.";
+"ChangePhone.ErrorOccupied" = "The number %@ is already connected to a TruthGram account. Please delete that account before migrating to the new number.";
 
-"AccessDenied.LocationTracking" = "Telegram needs access to your location to show you on the map.\n\nPlease go to Settings > Privacy > Location Services and set it to ON.";
+"AccessDenied.LocationTracking" = "TruthGram needs access to your location to show you on the map.\n\nPlease go to Settings > Privacy > Location Services and set it to ON.";
 
 "PrivacySettings.AuthSessions" = "Active Sessions";
 "AuthSessions.Title" = "Active Sessions";
@@ -1458,7 +1458,7 @@
 "AuthSessions.TerminateSession" = "Terminate session";
 "AuthSessions.OtherSessions" = "ACTIVE SESSIONS";
 "AuthSessions.EmptyTitle" = "No other sessions";
-"AuthSessions.EmptyText" = "You can log in to Telegram from other mobile, tablet and desktop devices, using the same phone number. All your data will be instantly synchronized.";
+"AuthSessions.EmptyText" = "You can log in to TruthGram from other mobile, tablet and desktop devices, using the same phone number. All your data will be instantly synchronized.";
 "AuthSessions.AppUnofficial" = "(ID: %@)";
 
 "WebPreview.GettingLinkInfo" = "Getting Link Info...";
@@ -1471,7 +1471,7 @@
 
 "GroupInfo.InviteLink.Title" = "Invite Link";
 "GroupInfo.InviteLink.LinkSection" = "LINK";
-"GroupInfo.InviteLink.Help" = "Anyone who has Telegram installed will be able to join your group by following this link.";
+"GroupInfo.InviteLink.Help" = "Anyone who has TruthGram installed will be able to join your group by following this link.";
 "GroupInfo.InviteLink.CopyLink" = "Copy Link";
 "GroupInfo.InviteLink.RevokeLink" = "Revoke Link";
 "GroupInfo.InviteLink.ShareLink" = "Share Link";
@@ -1558,7 +1558,7 @@
 
 "Login.PhoneNumberHelp" = "Help";
 "Login.EmailPhoneSubject" = "Invalid number %@";
-"Login.EmailPhoneBody" = "I'm trying to use my mobile phone number: %@\nBut Telegram says it's invalid. Please help.\nAdditional Info: %@, %@.";
+"Login.EmailPhoneBody" = "I'm trying to use my mobile phone number: %@\nBut TruthGram says it's invalid. Please help.\nAdditional Info: %@, %@.";
 
 "SharedMedia.TitleLink" = "Shared Links";
 "SharedMedia.EmptyLinksText" = "All links shared in this chat will appear here.";
@@ -1585,8 +1585,8 @@
 "Channel.Edit.LinkItem" = "Link";
 
 "Channel.Username.Title" = "Link";
-"Channel.Username.Help" = "You can choose a channel name on **Telegram**. If you do, other people will be able to find your channel by this name.\n\nYou can use **a-z**, **0-9** and underscores. Minimum length is **5** characters.";
-"Channel.Username.LinkHint" = "This link opens your channel in Telegram:[\nhttps://t.me/%@]";
+"Channel.Username.Help" = "You can choose a channel name on **TruthGram**. If you do, other people will be able to find your channel by this name.\n\nYou can use **a-z**, **0-9** and underscores. Minimum length is **5** characters.";
+"Channel.Username.LinkHint" = "This link opens your channel in TruthGram:[\nhttps://t.me/%@]";
 "Channel.Username.InvalidTooShort" = "Channel names must have at least 5 characters.";
 "Channel.Username.InvalidStartsWithNumber" = "Channel names can't start with a number.";
 "Channel.Username.InvalidCharacters" = "Sorry, this name is invalid.";
@@ -1631,7 +1631,7 @@
 
 "Channel.Setup.Title" = "Channel";
 
-"Channel.Username.CreatePublicLinkHelp" = "People can share this link with others and find your channel using Telegram search.";
+"Channel.Username.CreatePublicLinkHelp" = "People can share this link with others and find your channel using TruthGram search.";
 "Channel.Username.CreatePrivateLinkHelp" = "People can join your channel by following this link. You can revoke the link at any time.";
 
 "Channel.Setup.PublicNoLink" = "Please choose a link for your public channel, so that people can find it in search and share with others.\n\nIf you're not interested, we suggest creating a private channel instead.";
@@ -1757,7 +1757,7 @@
 
 "Group.Management.AddModeratorHelp" = "You can add admins to help you manage your group.";
 
-"Watch.AppName" = "Telegram";
+"Watch.AppName" = "TruthGram";
 "Watch.Compose.AddContact" = "Choose Contact";
 "Watch.Compose.CreateMessage" = "Create Message";
 "Watch.Compose.CurrentLocation" = "Current Location";
@@ -1792,7 +1792,7 @@
 
 "Watch.Message.ForwardedFrom" = "Forwarded from";
 
-"Watch.Notification.Joined" = "Joined Telegram";
+"Watch.Notification.Joined" = "Joined TruthGram";
 
 "Watch.MessageView.Title" = "Message";
 "Watch.MessageView.Forward" = "Forward";
@@ -1806,9 +1806,9 @@
 "Watch.Stickers.StickerPacks" = "Sticker Sets";
 
 "Watch.Location.Current" = "Current Location";
-"Watch.Location.Access" = "Allow Telegram to access location on your phone";
+"Watch.Location.Access" = "Allow TruthGram to access location on your phone";
 
-"Watch.AuthRequired" = "Log in to Telegram on your phone to get started";
+"Watch.AuthRequired" = "Log in to TruthGram on your phone to get started";
 
 "Watch.NoConnection" = "No Connection";
 "Watch.ConnectionDescription" = "Your Watch needs to be connected for the app to work";
@@ -1855,7 +1855,7 @@
 "Cache.ClearProgress" = "Please Wait...";
 "Cache.ClearEmpty" = "Empty";
 "Cache.ByPeerHeader" = "CHATS";
-"Cache.Indexing" = "Telegram is calculating current cache size.\nThis can take a few minutes.";
+"Cache.Indexing" = "TruthGram is calculating current cache size.\nThis can take a few minutes.";
 
 "ExplicitContent.AlertTitle" = "Sorry";
 "ExplicitContent.AlertChannel" = "You can't access this channel because it violates App Store rules.";
@@ -1936,7 +1936,7 @@
 "PrivacyLastSeenSettings.GroupsAndChannelsHelp" = "Change who can add you to groups and channels.";
 "MusicPlayer.VoiceNote" = "Voice Message";
 
-"Watch.Microphone.Access" = "Allow Telegram to access the microphone on your phone";
+"Watch.Microphone.Access" = "Allow TruthGram to access the microphone on your phone";
 
 "Settings.AppleWatch" = "Apple Watch";
 "AppleWatch.Title" = "Apple Watch";
@@ -2029,7 +2029,7 @@
 "Group.Setup.TypePublicHelp" = "Public groups can be found in search, chat history is available to everyone and anyone can join.";
 "Group.Setup.TypePrivateHelp" = "Private groups can only be joined if you were invited or have an invite link.";
 
-"Group.Username.CreatePublicLinkHelp" = "People can share this link with others and find your group using Telegram search.";
+"Group.Username.CreatePublicLinkHelp" = "People can share this link with others and find your group using TruthGram search.";
 "Group.Username.CreatePrivateLinkHelp" = "People can join your group by following this link. You can revoke the link at any time.";
 
 "Conversation.PinMessageAlertGroup" = "Pin this message and notify all members of the group?";
